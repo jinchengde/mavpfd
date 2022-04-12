@@ -15,7 +15,7 @@ from vehicle import Attitude, VFR_HUD, Global_Position_INT, BatteryInfo, FlightS
 
 from PySide2.QtWidgets import QApplication
 from PySide2.QtQuick import QQuickView
-from PySide2.QtCore import QUrl
+from PySide2.QtCore import QUrl, QThread
 from PySide2.QtQml import QQmlApplicationEngine
 from PySide2.QtGui import QGuiApplication
 class Connection(object):
@@ -54,34 +54,26 @@ class Connection(object):
             self._active = value     
 
 class Link(object):
-    def __init__(self, addrs):
+    def __init__(self, addrs, child_pipe_send):
         self._addrs = addrs
+        self._child_pipe_send = child_pipe_send
         self._conns = []
         self._connection_maintenance_target_should_live = True
         self._inactivity_timeout = 10
         self._reconnect_interval = 5
         self._fps = 10.0
-        self._sendDelay = (1.0/self._fps)*0.9
-        self._child_pipe_recv,self._parent_pipe_send = Pipe()
-        self._close_event = Event()
-        self._close_event.clear()
-        # self._vehicle_status = Vehicle_Status()
+        self._sendDelay = (1.0/self._fps)*0.9        
 
-        self._child = Process(target=self.update_mav)
-        self._child.start()
-        self._child_pipe_recv.close()
-        
-
-    def update_mav(self):
-        '''sync data from Pipe'''
-        self._parent_pipe_send.close()
-        while self._child_pipe_recv.poll():
-                objList = self._child_pipe_recv.recv()
-                for obj in objList:
-                    if isinstance(obj,Attitude):
-                        # self._vehicle_status.set_pitch(obj.pitch)
-                        print(obj.pitch*180/math.pi)
-                time.sleep(0.1)                
+    # def update_mav(self):
+    #     '''sync data from Pipe'''
+    #     self._parent_pipe_send.close()
+    #     while self._child_pipe_recv.poll():
+    #             objList = self._child_pipe_recv.recv()
+    #             for obj in objList:
+    #                 if isinstance(obj,Attitude):
+    #                     # self._vehicle_status.set_pitch(obj.pitch)
+    #                     print(obj.pitch*180/math.pi)
+    #             time.sleep(0.1)                
         
     def maintain_connections(self):
         now = time.time()
@@ -106,7 +98,7 @@ class Link(object):
     def send_messages(self):
         for conn in self._conns:
             if (time.time() - conn._last_msg_send) > self._sendDelay:
-                self._parent_pipe_send.send(conn._msglist)
+                self._child_pipe_send.send(conn._msglist)
                 conn._msgList = []
                 conn._last_msg_send = time.time()
             else:
@@ -157,11 +149,21 @@ class Link(object):
         while True:
             self.loop()
 
-def childProcessRun(args):
-    for x in args:
-        print(x)
-    hub = Link(args)
-    if len(args) == 0:
+def update_mav(parent_pipe_recv):
+    '''sync data from Pipe'''
+    while parent_pipe_recv.poll():
+            objList = parent_pipe_recv.recv()
+            for obj in objList:
+                if isinstance(obj,Attitude):
+                    # self._vehicle_status.set_pitch(obj.pitch)
+                    print(obj.pitch*180/math.pi)
+            time.sleep(0.1) 
+
+def childProcessRun(parm, p):
+    parent_pipe_recv,child_pipe_send = p
+    parent_pipe_recv.close()
+    hub = Link(parm, child_pipe_send)
+    if len(parm) == 0:
         print("Insufficient arguments")
         sys.exit(1)
     hub.run()
@@ -170,18 +172,25 @@ def childProcessRun(args):
 if __name__ == '__main__':
     parser = optparse.OptionParser("mavpfd.py [options]")
     (opts, parm) = parser.parse_args()
-    
-    childProcess = Process(target=childProcessRun, args=(parm,))
-    childProcess.start()
-    
-    vehicle_status = Vehicle_Status()
-    app = QApplication([])
-    view = QQuickView()
-    context = view.rootContext()
-    context.setContextProperty("vehicle_status", vehicle_status)
-    url = QUrl("view.qml")
 
-    view.setSource(url)
-    view.show()
-    app.exec_()
+    parent_pipe_recv,child_pipe_send = Pipe()
+    childProcess = Process(target=childProcessRun, args=((parm, (parent_pipe_recv,child_pipe_send))))
+    childProcess.start()
+    child_pipe_send.close()
+
+    vehicle_status = Vehicle_Status()
+
+    time.sleep(5)
+    update_mav(parent_pipe_recv)
+
+    # vehicle_status = Vehicle_Status()
+    # app = QApplication([])
+    # view = QQuickView()
+    # context = view.rootContext()
+    # context.setContextProperty("vehicle_status", vehicle_status)
+    # url = QUrl("view.qml")
+
+    # view.setSource(url)
+    # view.show()
+    # app.exec_()
 

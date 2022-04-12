@@ -54,7 +54,7 @@ import math
 class Vehicle_Status(QObject):
     def __init__(self, parent=None):
         QObject.__init__(self, parent)
-        self._pitch = 1.0
+        self._pitch = 1.6
 
     value_changed = Signal(float)
 
