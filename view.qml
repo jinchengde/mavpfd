@@ -6,7 +6,7 @@ Rectangle {
     color: "cyan"
     Text {
         text: vehicle_status.pitch.toFixed(5)
-        //text: "hello"
+        // text: "hello world"
         anchors.centerIn: parent
     }    
 }

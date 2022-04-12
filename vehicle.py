@@ -51,8 +51,9 @@ class FPS():
 from PySide2.QtCore import QObject, Signal, Property, QUrl, QTimer, QDateTime, Slot
 import math
 
-class Vehicle_Status(object):
-    def __init__(self):
+class Vehicle_Status(QObject):
+    def __init__(self, parent=None):
+        QObject.__init__(self, parent)
         self._pitch = 1.0
 
     value_changed = Signal(float)

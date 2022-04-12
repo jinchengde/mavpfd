@@ -13,6 +13,11 @@ from multiprocessing import Process, freeze_support, Pipe, Semaphore, Event, Loc
 
 from vehicle import Attitude, VFR_HUD, Global_Position_INT, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
 
+from PySide2.QtWidgets import QApplication
+from PySide2.QtQuick import QQuickView
+from PySide2.QtCore import QUrl
+from PySide2.QtQml import QQmlApplicationEngine
+from PySide2.QtGui import QGuiApplication
 class Connection(object):
     def __init__(self, addr):
         self._addr = addr
@@ -68,8 +73,7 @@ class Link(object):
         
 
     def update_mav(self):
-        '''sync data from Pipe'''        
-        print("update mav")
+        '''sync data from Pipe'''
         self._parent_pipe_send.close()
         while self._child_pipe_recv.poll():
                 objList = self._child_pipe_recv.recv()
@@ -77,8 +81,7 @@ class Link(object):
                     if isinstance(obj,Attitude):
                         # self._vehicle_status.set_pitch(obj.pitch)
                         print(obj.pitch*180/math.pi)
-                time.sleep(0.1)
-                
+                time.sleep(0.1)                
         
     def maintain_connections(self):
         now = time.time()
@@ -154,12 +157,31 @@ class Link(object):
         while True:
             self.loop()
 
-if __name__ == '__main__':
-    parser = optparse.OptionParser("mavpfd.py [options]")
-    (opts, args) = parser.parse_args()
-
+def childProcessRun(args):
+    for x in args:
+        print(x)
     hub = Link(args)
     if len(args) == 0:
         print("Insufficient arguments")
         sys.exit(1)
     hub.run()
+    
+
+if __name__ == '__main__':
+    parser = optparse.OptionParser("mavpfd.py [options]")
+    (opts, parm) = parser.parse_args()
+    
+    childProcess = Process(target=childProcessRun, args=(parm,))
+    childProcess.start()
+    
+    vehicle_status = Vehicle_Status()
+    app = QApplication([])
+    view = QQuickView()
+    context = view.rootContext()
+    context.setContextProperty("vehicle_status", vehicle_status)
+    url = QUrl("view.qml")
+
+    view.setSource(url)
+    view.show()
+    app.exec_()
+
