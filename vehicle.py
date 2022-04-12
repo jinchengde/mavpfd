@@ -48,22 +48,23 @@ class FPS():
     def __init__(self,fps):
         self.fps = fps # if fps is zero, then the frame rate is unrestricted
         
-from PySide2.QtCore import QObject, Signal, Property, QUrl, QTimer, QDateTime, Slot
+from PyQt5 import QtCore
 import math
 
-class Vehicle_Status(QObject):
+class Vehicle_Status(QtCore.QObject):
+    pitch_changed = QtCore.pyqtSignal(float)
+
     def __init__(self, parent=None):
-        QObject.__init__(self, parent)
+        super(Vehicle_Status, self).__init__(parent)
         self._pitch = 1.6
 
-    value_changed = Signal(float)
-
-    def get_pitch(self):
+    @QtCore.pyqtProperty(float, notify=pitch_changed)
+    def pitch(self):
         return self._pitch
-        
-    def set_pitch(self, value):
-        self._pitch = value *180/math.pi
-
-    pitch = Property(float, get_pitch, set_pitch, notify=value_changed)
+    
+    @pitch.setter
+    def pitch(self, value):
+        self._pitch = value * 180 / math.pi
+        self.pitch_changed.emit(self._pitch)
 
 

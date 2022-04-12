@@ -2,6 +2,8 @@
 
 from __future__ import print_function
 
+from functools import partial
+
 from pymavlink import mavutil
 import sys
 import time
@@ -13,11 +15,14 @@ from multiprocessing import Process, freeze_support, Pipe, Semaphore, Event, Loc
 
 from vehicle import Attitude, VFR_HUD, Global_Position_INT, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
 
-from PySide2.QtWidgets import QApplication
-from PySide2.QtQuick import QQuickView
-from PySide2.QtCore import QUrl, QThread
-from PySide2.QtQml import QQmlApplicationEngine
-from PySide2.QtGui import QGuiApplication
+# from PySide2.QtWidgets import QApplication
+# from PySide2.QtQuick import QQuickView
+# from PySide2.QtCore import QUrl, QThread
+# from PySide2.QtQml import QQmlApplicationEngine
+# from PySide2.QtGui import QGuiApplication
+from PyQt5.QtGui import QGuiApplication
+from PyQt5.QtQuick import QQuickView
+from PyQt5.QtCore import QUrl, QTimer
 class Connection(object):
     def __init__(self, addr):
         self._addr = addr
@@ -64,17 +69,6 @@ class Link(object):
         self._fps = 10.0
         self._sendDelay = (1.0/self._fps)*0.9        
 
-    # def update_mav(self):
-    #     '''sync data from Pipe'''
-    #     self._parent_pipe_send.close()
-    #     while self._child_pipe_recv.poll():
-    #             objList = self._child_pipe_recv.recv()
-    #             for obj in objList:
-    #                 if isinstance(obj,Attitude):
-    #                     # self._vehicle_status.set_pitch(obj.pitch)
-    #                     print(obj.pitch*180/math.pi)
-    #             time.sleep(0.1)                
-        
     def maintain_connections(self):
         now = time.time()
         for conn in self._conns:
@@ -151,13 +145,12 @@ class Link(object):
 
 def update_mav(parent_pipe_recv):
     '''sync data from Pipe'''
-    while parent_pipe_recv.poll():
+    while parent_pipe_recv.poll(0.001):
             objList = parent_pipe_recv.recv()
             for obj in objList:
                 if isinstance(obj,Attitude):
-                    # self._vehicle_status.set_pitch(obj.pitch)
-                    print(obj.pitch*180/math.pi)
-            time.sleep(0.1) 
+                    vehicle_status.pitch = obj.pitch
+                    print(obj.pitch*180/math.pi) 
 
 def childProcessRun(parm, p):
     parent_pipe_recv,child_pipe_send = p
@@ -166,8 +159,7 @@ def childProcessRun(parm, p):
     if len(parm) == 0:
         print("Insufficient arguments")
         sys.exit(1)
-    hub.run()
-    
+    hub.run()    
 
 if __name__ == '__main__':
     parser = optparse.OptionParser("mavpfd.py [options]")
@@ -180,17 +172,19 @@ if __name__ == '__main__':
 
     vehicle_status = Vehicle_Status()
 
-    time.sleep(5)
-    update_mav(parent_pipe_recv)
+    app = QGuiApplication(sys.argv)
+    view = QQuickView()
+    view.setResizeMode(QQuickView.SizeRootObjectToView)
+    ctxt = view.rootContext()
+    ctxt.setContextProperty('vehicle_status', vehicle_status)
+    view.setSource(QUrl('view.qml'))
+    view.show()
 
-    # vehicle_status = Vehicle_Status()
-    # app = QApplication([])
-    # view = QQuickView()
-    # context = view.rootContext()
-    # context.setContextProperty("vehicle_status", vehicle_status)
-    # url = QUrl("view.qml")
+    timer = QTimer(interval=500)
+    timer.timeout.connect(partial(update_mav, parent_pipe_recv))
+    timer.start()
 
-    # view.setSource(url)
-    # view.show()
-    # app.exec_()
+    sys.exit(app.exec_())
+
+
 
