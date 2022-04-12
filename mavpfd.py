@@ -32,6 +32,9 @@ class Connection(object):
         self._last_connection_attempt = 0
         self._msglist = []
 
+    def clearMsgList(self):
+        self._msglist = []
+
     def open(self):
         try:
             '''open mavlink connection'''
@@ -91,9 +94,9 @@ class Link(object):
 
     def send_messages(self):
         for conn in self._conns:
-            if (time.time() - conn._last_msg_send) > self._sendDelay:
+            if (time.time() - conn._last_msg_send) > self._sendDelay and len(conn._msglist) > 0:
                 self._child_pipe_send.send(conn._msglist)
-                conn._msgList = []
+                conn.clearMsgList()
                 conn._last_msg_send = time.time()
             else:
                 continue
@@ -116,6 +119,7 @@ class Link(object):
                 packet_received = True
                 if m._type == 'ATTITUDE':
                     conn._msglist.append(Attitude(m))
+                    # print("Snd %f"%m.pitch)
                 continue
 
         if not packet_received:
@@ -145,12 +149,12 @@ class Link(object):
 
 def update_mav(parent_pipe_recv):
     '''sync data from Pipe'''
-    while parent_pipe_recv.poll(0.001):
+    if parent_pipe_recv.poll(0.001):
             objList = parent_pipe_recv.recv()
             for obj in objList:
                 if isinstance(obj,Attitude):
                     vehicle_status.pitch = obj.pitch
-                    print(obj.pitch*180/math.pi) 
+                    # print("Rcv %f"%obj.pitch)
 
 def childProcessRun(parm, p):
     parent_pipe_recv,child_pipe_send = p
