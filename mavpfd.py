@@ -160,10 +160,10 @@ def update_mav(parent_pipe_recv):
 def childProcessRun(parm, p):
     parent_pipe_recv,child_pipe_send = p
     parent_pipe_recv.close()
-    hub = Link(parm, child_pipe_send)
     if len(parm) == 0:
         print("Insufficient arguments")
         sys.exit(1)
+    hub = Link(parm, child_pipe_send)    
     hub.run()    
 
 if __name__ == '__main__':
