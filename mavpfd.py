@@ -26,6 +26,7 @@ class Connection(object):
         self._addr = addr
         self._active = False
         self._last_packet_received = 0
+        self._last_attitude_received = 0
         self._last_msg_send = 0
         self._last_connection_attempt = 0
         self._msglist = []
@@ -120,8 +121,9 @@ class Link(object):
                 conn._last_packet_received = now
                 packet_received = True
                 if m._type == 'ATTITUDE':
-                    conn._msglist.append(Attitude(m))
-                    # print("Snd %f"%m.pitch)
+                    if now - conn._last_attitude_received > 0.5:
+                        conn._last_attitude_received = now
+                        conn._msglist.append(Attitude(m))
                 continue
 
         if not packet_received:
@@ -157,7 +159,6 @@ def update_mav(parent_pipe_recv):
                 if isinstance(obj,Attitude):
                     vehicle_status.pitch = obj.pitch
                     vehicle_status.roll = obj.roll
-                    # print("Rcv %f"%obj.pitch)
 
 def childProcessRun(parm, p):
     parent_pipe_recv,child_pipe_send = p
@@ -179,13 +180,6 @@ if __name__ == '__main__':
 
     vehicle_status = Vehicle_Status()
 
-    # app = QGuiApplication(sys.argv)
-    # view = QQuickView()
-    # view.setResizeMode(QQuickView.SizeRootObjectToView)
-    # ctxt = view.rootContext()
-    # ctxt.setContextProperty('pfd', vehicle_status)
-    # view.setSource(QUrl('qml/PFD.qml'))
-    # view.show()
     app = QGuiApplication(sys.argv)
     engine = QQmlApplicationEngine(parent=app)
     context = engine.rootContext()
