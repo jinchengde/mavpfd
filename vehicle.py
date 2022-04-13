@@ -13,12 +13,13 @@ class VFR_HUD():
         self.heading = hudMsg.heading
         self.throttle = hudMsg.throttle
         self.climbRate = hudMsg.climb
+        self.alt = hudMsg.alt
         
 class Global_Position_INT():
     '''Altitude relative to ground (GPS).'''
-    def __init__(self,gpsINT,curTime):
+    def __init__(self,gpsINT):
         self.relAlt = gpsINT.relative_alt/1000.0
-        self.curTime = curTime
+        # self.curTime = curTime
         
 class BatteryInfo():
     '''Voltage, current and remaning battery.'''
@@ -55,12 +56,18 @@ class Vehicle_Status(QtCore.QObject):
     pitch_changed = QtCore.pyqtSignal(float)
     roll_changed = QtCore.pyqtSignal(float)
     yaw_changed = QtCore.pyqtSignal(float)
+    altitude_changed = QtCore.pyqtSignal(float)
+    altitude_bug_changed = QtCore.pyqtSignal(float)
+    alt_changed = QtCore.pyqtSignal(float)
+    airspeed_changed = QtCore.pyqtSignal(float)
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
         self._pitch = 0.0
         self._roll = 0.0
         self._yaw = 0.0
+        self._alt = 0.0
+        self._airspeed = 0.0
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):
@@ -88,5 +95,25 @@ class Vehicle_Status(QtCore.QObject):
     def yaw(self, value):
         self._yaw = value * 180 / math.pi
         self.yaw_changed.emit(self._yaw)
+
+    @QtCore.pyqtProperty(float, notify=alt_changed)
+    def alt(self):
+        return self._alt
+    
+    @alt.setter
+    def alt(self, value):
+        self._alt = value
+        self.alt_changed.emit(self._alt)
+
+    @QtCore.pyqtProperty(float, notify=airspeed_changed)
+    def airspeed(self):
+        return self._airspeed
+    
+    @airspeed.setter
+    def airspeed(self, value):
+        self._airspeed = value
+        self.airspeed_changed.emit(self._airspeed)
+
+    
 
 

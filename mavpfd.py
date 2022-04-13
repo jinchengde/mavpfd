@@ -27,6 +27,8 @@ class Connection(object):
         self._active = False
         self._last_packet_received = 0
         self._last_attitude_received = 0
+        self._last_vfr_hud_received = 0
+        self._last_global_position_int = 0
         self._last_msg_send = 0
         self._last_connection_attempt = 0
         self._msglist = []
@@ -124,6 +126,14 @@ class Link(object):
                     if now - conn._last_attitude_received > 0.1:
                         conn._last_attitude_received = now
                         conn._msglist.append(Attitude(m))
+                elif m._type == 'VFR_HUD':
+                    if now - conn._last_vfr_hud_received > 0.1:
+                        conn._last_vfr_hud_received = now
+                        conn._msglist.append(VFR_HUD(m))
+                elif m._type == 'GLOBAL_POSITION_INT':
+                    if now - conn._last_global_position_int > 0.1:
+                        conn._last_global_position_int = now
+                        conn._msglist.append(Global_Position_INT(m))
                 continue
 
         if not packet_received:
@@ -159,6 +169,10 @@ def update_mav(parent_pipe_recv):
                 if isinstance(obj,Attitude):
                     vehicle_status.pitch = obj.pitch
                     vehicle_status.roll = obj.roll
+                elif isinstance(obj,VFR_HUD):
+                    vehicle_status.airspeed = obj.airspeed
+                elif isinstance(obj, Global_Position_INT):
+                    vehicle_status.alt = obj.relAlt
 
 def childProcessRun(parm, p):
     parent_pipe_recv,child_pipe_send = p

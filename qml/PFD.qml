@@ -40,6 +40,9 @@ Window {
 
                     adi.roll: pfd.roll
                     adi.pitch: pfd.pitch
+                    asi.airspeed: pfd.airspeed
+                    alt.altitude: pfd.alt
+                    alt.bugValue: pfd.alt
                 }
             }
         }
