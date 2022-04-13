@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}\\mavpfd.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["udp:127.0.0.1:14550"]
+            "args": ["udp:127.0.0.1:14551"]
         }
     ]
 }

@@ -18,6 +18,7 @@ from vehicle import Attitude, VFR_HUD, Global_Position_INT, BatteryInfo, FlightS
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtQuick import QQuickView
 from PyQt5.QtCore import QUrl, QTimer
+from PyQt5.QtQml import QQmlApplicationEngine
 
 class Connection(object):
     '''mavlink connection'''
@@ -155,6 +156,7 @@ def update_mav(parent_pipe_recv):
             for obj in objList:
                 if isinstance(obj,Attitude):
                     vehicle_status.pitch = obj.pitch
+                    vehicle_status.roll = obj.roll
                     # print("Rcv %f"%obj.pitch)
 
 def childProcessRun(parm, p):
@@ -177,13 +179,18 @@ if __name__ == '__main__':
 
     vehicle_status = Vehicle_Status()
 
+    # app = QGuiApplication(sys.argv)
+    # view = QQuickView()
+    # view.setResizeMode(QQuickView.SizeRootObjectToView)
+    # ctxt = view.rootContext()
+    # ctxt.setContextProperty('pfd', vehicle_status)
+    # view.setSource(QUrl('qml/PFD.qml'))
+    # view.show()
     app = QGuiApplication(sys.argv)
-    view = QQuickView()
-    view.setResizeMode(QQuickView.SizeRootObjectToView)
-    ctxt = view.rootContext()
-    ctxt.setContextProperty('vehicle_status', vehicle_status)
-    view.setSource(QUrl('view.qml'))
-    view.show()
+    engine = QQmlApplicationEngine(parent=app)
+    context = engine.rootContext()
+    context.setContextProperty("pfd", vehicle_status)
+    engine.load(QUrl('qml/PFD.qml'))
 
     timer = QTimer(interval=500)
     timer.timeout.connect(partial(update_mav, parent_pipe_recv))
