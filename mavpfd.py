@@ -15,15 +15,12 @@ from multiprocessing import Process, freeze_support, Pipe, Semaphore, Event, Loc
 
 from vehicle import Attitude, VFR_HUD, Global_Position_INT, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
 
-# from PySide2.QtWidgets import QApplication
-# from PySide2.QtQuick import QQuickView
-# from PySide2.QtCore import QUrl, QThread
-# from PySide2.QtQml import QQmlApplicationEngine
-# from PySide2.QtGui import QGuiApplication
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtQuick import QQuickView
 from PyQt5.QtCore import QUrl, QTimer
+
 class Connection(object):
+    '''mavlink connection'''
     def __init__(self, addr):
         self._addr = addr
         self._active = False
@@ -33,6 +30,7 @@ class Connection(object):
         self._msglist = []
 
     def clearMsgList(self):
+        # clean the msg list in function, cant clear it directly
         self._msglist = []
 
     def open(self):
@@ -41,8 +39,7 @@ class Connection(object):
             print("Opening connection to %s" % (self._addr,))
             self._mav = mavutil.mavlink_connection(self._addr, baud=115200)
             self._active = True
-            self._last_packet_received = time.time() # lie
-
+            self._last_packet_received = time.time()
         except Exception as e:
             print("Connection to (%s) failed: %s" % (self._addr, str(e)))
 
@@ -62,6 +59,7 @@ class Connection(object):
             self._active = value     
 
 class Link(object):
+    '''mavlink connect maintain'''
     def __init__(self, addrs, child_pipe_send):
         self._addrs = addrs
         self._child_pipe_send = child_pipe_send
@@ -73,6 +71,7 @@ class Link(object):
         self._sendDelay = (1.0/self._fps)*0.9        
 
     def maintain_connections(self):
+        '''reconnect the mavlink'''
         now = time.time()
         for conn in self._conns:
             if not conn.active:
@@ -93,6 +92,7 @@ class Link(object):
             self._conns.append(Connection(addr))
 
     def send_messages(self):
+        '''send msg to qml process''' 
         for conn in self._conns:
             if (time.time() - conn._last_msg_send) > self._sendDelay and len(conn._msglist) > 0:
                 self._child_pipe_send.send(conn._msglist)
@@ -102,6 +102,7 @@ class Link(object):
                 continue
 
     def handle_messages(self):
+        '''receive msg from mavlink''' 
         now = time.time()
         packet_received = False
         for conn in self._conns:
