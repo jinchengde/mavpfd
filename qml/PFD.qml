@@ -8,9 +8,9 @@ import QtQuick.Controls 2.15
 Window {
     id: window
     visible: true
-    minimumWidth: 800
-    minimumHeight: 600
-    visibility: Window.Maximized
+    minimumWidth: 600
+    minimumHeight: 400
+    //visibility: Window.Maximized
     title: "Primary Flight Display"
     color: "#ffffff"
 
