@@ -121,7 +121,7 @@ class Link(object):
                 conn._last_packet_received = now
                 packet_received = True
                 if m._type == 'ATTITUDE':
-                    if now - conn._last_attitude_received > 0.5:
+                    if now - conn._last_attitude_received > 0.1:
                         conn._last_attitude_received = now
                         conn._msglist.append(Attitude(m))
                 continue
@@ -153,7 +153,7 @@ class Link(object):
 
 def update_mav(parent_pipe_recv):
     '''sync data from Pipe'''
-    if parent_pipe_recv.poll(0.001):
+    if parent_pipe_recv.poll():
             objList = parent_pipe_recv.recv()
             for obj in objList:
                 if isinstance(obj,Attitude):
@@ -186,7 +186,7 @@ if __name__ == '__main__':
     context.setContextProperty("pfd", vehicle_status)
     engine.load(QUrl('qml/PFD.qml'))
 
-    timer = QTimer(interval=500)
+    timer = QTimer(interval=100)
     timer.timeout.connect(partial(update_mav, parent_pipe_recv))
     timer.start()
 
