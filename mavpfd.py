@@ -13,7 +13,7 @@ import math
 
 from multiprocessing import Process, freeze_support, Pipe, Semaphore, Event, Lock, Queue
 
-from vehicle import Attitude, VFR_HUD, Global_Position_INT, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
+from vehicle import Attitude, VFR_HUD, Global_Position_INT, NAV_Controller_Output, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
 
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtQuick import QQuickView
@@ -29,6 +29,7 @@ class Connection(object):
         self._last_attitude_received = 0
         self._last_vfr_hud_received = 0
         self._last_global_position_int = 0
+        self._last_mav_controller_output = 0
         self._last_msg_send = 0
         self._last_connection_attempt = 0
         self._msglist = []
@@ -134,6 +135,10 @@ class Link(object):
                     if now - conn._last_global_position_int > 0.1:
                         conn._last_global_position_int = now
                         conn._msglist.append(Global_Position_INT(m))
+                elif m._type == 'NAV_CONTROLLER_OUTPUT':
+                    if now - conn._last_mav_controller_output > 0.1:
+                        conn._last_mav_controller_output = now
+                        conn._msglist.append(NAV_Controller_Output(m))
                 continue
 
         if not packet_received:
@@ -175,6 +180,10 @@ def update_mav(parent_pipe_recv):
                     vehicle_status.climbrate = obj.climbRate
                 elif isinstance(obj, Global_Position_INT):
                     vehicle_status.alt = obj.relAlt
+                elif isinstance(obj, NAV_Controller_Output):
+                    vehicle_status.nav_pitch = obj.nav_pitch
+                    vehicle_status.nav_roll = obj.nav_roll
+                    vehicle_status.nav_yaw = obj.nav_yaw
 
 def childProcessRun(parm, p):
     parent_pipe_recv,child_pipe_send = p

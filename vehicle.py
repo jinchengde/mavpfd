@@ -7,13 +7,20 @@ class Attitude():
 
 class VFR_HUD():
     '''HUD Information.'''
-    def __init__(self,hudMsg):
+    def __init__(self, hudMsg):
         self.airspeed = hudMsg.airspeed
         self.groundspeed = hudMsg.groundspeed
         self.heading = hudMsg.heading
         self.throttle = hudMsg.throttle
         self.climbRate = hudMsg.climb
         self.alt = hudMsg.alt
+
+class NAV_Controller_Output():
+    '''fixed wing navigation and position controller'''
+    def __init__(self, controller_output):
+        self.nav_roll = controller_output.nav_roll
+        self.nav_pitch = controller_output.nav_pitch
+        self.nav_yaw = controller_output.target_bearing
         
 class Global_Position_INT():
     '''Altitude relative to ground (GPS).'''
@@ -49,6 +56,7 @@ class FPS():
     def __init__(self,fps):
         self.fps = fps # if fps is zero, then the frame rate is unrestricted
         
+from multiprocessing.sharedctypes import Value
 from PyQt5 import QtCore
 import math
 
@@ -61,6 +69,9 @@ class Vehicle_Status(QtCore.QObject):
     alt_changed = QtCore.pyqtSignal(float)
     climbrate_changed = QtCore.pyqtSignal(float)
     airspeed_changed = QtCore.pyqtSignal(float)
+    nav_pitch_changed = QtCore.pyqtSignal(float)
+    nav_roll_changed = QtCore.pyqtSignal(float)
+    nav_yaw_changed = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
@@ -70,6 +81,9 @@ class Vehicle_Status(QtCore.QObject):
         self._alt = 0.0
         self._climbrate = 0.0
         self._airspeed = 0.0
+        self._nav_pitch = 0.0
+        self._nav_roll = 0.0
+        self._nav_yaw = 0
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):
@@ -125,6 +139,32 @@ class Vehicle_Status(QtCore.QObject):
         self._airspeed = value
         self.airspeed_changed.emit(self._airspeed)
 
+    @QtCore.pyqtProperty(float, notify=nav_pitch_changed)
+    def nav_pitch(self):
+        return self._nav_pitch
+
+    @nav_pitch.setter
+    def nav_pitch(self, value):
+        self._nav_pitch = value
+        self.nav_pitch_changed.emit(self._nav_pitch)
+
+    @QtCore.pyqtProperty(float, notify=nav_roll_changed)
+    def nav_roll(self):
+        return self._nav_roll
+
+    @nav_roll.setter
+    def nav_roll(self, value):
+        self._nav_roll = value
+        self.nav_roll_changed.emit(self._nav_roll)
+
+    @QtCore.pyqtProperty(int, notify=nav_yaw_changed)
+    def nav_yaw(self):
+        return self._nav_yaw
+
+    @nav_yaw.setter
+    def nav_yaw(self, value):
+        self._nav_yaw = value
+        self.nav_yaw_changed.emit(self._nav_yaw)
     
 
 
