@@ -55,18 +55,20 @@ import math
 class Vehicle_Status(QtCore.QObject):
     pitch_changed = QtCore.pyqtSignal(float)
     roll_changed = QtCore.pyqtSignal(float)
-    yaw_changed = QtCore.pyqtSignal(float)
+    yaw_changed = QtCore.pyqtSignal(int)
     altitude_changed = QtCore.pyqtSignal(float)
     altitude_bug_changed = QtCore.pyqtSignal(float)
     alt_changed = QtCore.pyqtSignal(float)
+    climbrate_changed = QtCore.pyqtSignal(float)
     airspeed_changed = QtCore.pyqtSignal(float)
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
         self._pitch = 0.0
         self._roll = 0.0
-        self._yaw = 0.0
+        self._yaw = 0
         self._alt = 0.0
+        self._climbrate = 0.0
         self._airspeed = 0.0
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
@@ -87,13 +89,13 @@ class Vehicle_Status(QtCore.QObject):
         self._roll = value * 180 / math.pi
         self.roll_changed.emit(self._roll)
 
-    @QtCore.pyqtProperty(float, notify=yaw_changed)
+    @QtCore.pyqtProperty(int, notify=yaw_changed)
     def yaw(self):
         return self._yaw
     
     @yaw.setter
     def yaw(self, value):
-        self._yaw = value * 180 / math.pi
+        self._yaw = value
         self.yaw_changed.emit(self._yaw)
 
     @QtCore.pyqtProperty(float, notify=alt_changed)
@@ -104,6 +106,15 @@ class Vehicle_Status(QtCore.QObject):
     def alt(self, value):
         self._alt = value
         self.alt_changed.emit(self._alt)
+
+    @QtCore.pyqtProperty(float, notify=climbrate_changed)
+    def climbrate(self):
+        return self._climbrate
+
+    @climbrate.setter
+    def climbrate(self, value):
+        self._climbrate = value
+        self.climbrate_changed.emit(self._climbrate)
 
     @QtCore.pyqtProperty(float, notify=airspeed_changed)
     def airspeed(self):

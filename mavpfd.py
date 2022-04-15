@@ -171,6 +171,8 @@ def update_mav(parent_pipe_recv):
                     vehicle_status.roll = obj.roll
                 elif isinstance(obj,VFR_HUD):
                     vehicle_status.airspeed = obj.airspeed
+                    vehicle_status.yaw = obj.heading
+                    vehicle_status.climbrate = obj.climbRate
                 elif isinstance(obj, Global_Position_INT):
                     vehicle_status.alt = obj.relAlt
 
