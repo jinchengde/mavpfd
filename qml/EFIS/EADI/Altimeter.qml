@@ -11,8 +11,8 @@ Item {
 
     property double maximumAltitude: 999
     property double minimumAltitude: 0
-    property double tickmarkStepSize: 20
-    property double labelStepSize: 100
+    property double tickmarkStepSize: 10
+    property double labelStepSize: 50
 
     readonly property int tickmarkCount: (maximumAltitude - minimumAltitude) / tickmarkStepSize
     readonly property int visibleTickmarkCount: 175 / (tickmarkStepSize * pixelPerAltitude)
@@ -20,7 +20,7 @@ Item {
     readonly property int labelCount: (maximumAltitude - minimumAltitude) / labelStepSize
     readonly property int visibleLabelCount: 175 / (labelStepSize * pixelPerAltitude)
 
-    readonly property double pixelPerAltitude: 1
+    readonly property double pixelPerAltitude: 1.75
 
     property double altitudeBugDeltaY: 0
 
