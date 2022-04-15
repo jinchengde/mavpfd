@@ -20,7 +20,7 @@ Item {
     readonly property int labelCount: (maximumAltitude - minimumAltitude) / labelStepSize
     readonly property int visibleLabelCount: 175 / (labelStepSize * pixelPerAltitude)
 
-    readonly property double pixelPerAltitude: 0.50
+    readonly property double pixelPerAltitude: 1
 
     property double altitudeBugDeltaY: 0
 

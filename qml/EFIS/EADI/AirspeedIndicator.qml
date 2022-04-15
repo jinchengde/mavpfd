@@ -10,12 +10,12 @@ Item  {
     property double airspeed: 0
     property double bugValue: 0
 
-    property double maximumAirspeed: 9999
+    property double maximumAirspeed: 999
     property double minimumAirspeed: 0
-    property double tickmarkStepSize: 10
-    property double labelStepSize: 20
+    property double tickmarkStepSize: 5
+    property double labelStepSize: 10
 
-    readonly property double pixelPerSpeed: 1.5
+    readonly property double pixelPerSpeed: 6
     readonly property double highAirspeed: 160
     readonly property double lowAirspeed: 85
 
