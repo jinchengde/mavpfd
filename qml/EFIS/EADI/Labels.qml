@@ -10,7 +10,7 @@ Item {
     property double pressure: 0
 
     property int pressureMode: 0 // 0->STD, 1->MB, 2->IN
-    property int flightMode: 0 // 0->OFF, 1->FD, 2->CMD
+    property string flightMode: '' // 0->OFF, 1->FD, 2->CMD
     property int speedMode: 0 // 0->OFF, 1->FMC SPD
     property int lnav: 0 // 0->OFF, 1->HDG, 2->NAV, 3->NAV ARM, 4->NAV APR, 5->NAV APR ARM, 6->BC, 7->BC ARM
     property int vnav: 0 // 0->OFF, 1->ALT, 2->IAS, 3->VS, 4->ALT SEL, 5->GS, 6-> GS ARM
@@ -75,28 +75,29 @@ Item {
         anchors.horizontalCenter: altitudeBugText.horizontalCenter
         color: "#00ff00"
         antialiasing: true
-        text: pressureMode === 0 ? "STD" :
-                                   pressureMode === 1 ? pressure.toFixed(0) + " MB" :
-                                                        pressureMode === 2 ? pressure.toFixed(2) + " IN" : ""
+        // text: pressureMode === 0 ? "STD" :
+        //                            pressureMode === 1 ? pressure.toFixed(0) + " MB" :
+        //                                                 pressureMode === 2 ? pressure.toFixed(2) + " IN" : ""
+        text: flightMode
 
     }
 
     // Flight Mode
-    Text {
-        y: 33
-        width: 128
-        height: 18
-        font.family: "Courier Std"
-        font.pixelSize: 16
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        color: "#00ff00"
-        antialiasing: true
-        text: flightMode === 1 ? "FD" :
-                                 flightMode === 2 ? "CMD" : ""
+    // Text {
+    //     y: 33
+    //     width: 128
+    //     height: 18
+    //     font.family: "Courier Std"
+    //     font.pixelSize: 16
+    //     horizontalAlignment: Text.AlignHCenter
+    //     verticalAlignment: Text.AlignVCenter
+    //     anchors.horizontalCenter: parent.horizontalCenter
+    //     color: "#00ff00"
+    //     antialiasing: true
+    //     text: flightMode === 1 ? "FD" :
+    //                              flightMode === 2 ? "CMD" : ""
 
-    }
+    // }
 
     // Speed Mode
     Text {

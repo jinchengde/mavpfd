@@ -47,6 +47,7 @@ Window {
                     asi.airspeed: pfd.airspeed
                     alt.altitude: pfd.alt
                     vsi.climbRate: pfd.climbrate
+                    labels.flightMode: pfd.flightmode
                 }
             }
         }
