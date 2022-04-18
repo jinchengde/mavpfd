@@ -141,7 +141,12 @@ class Vehicle_Status(QtCore.QObject):
 
     @climbrate.setter
     def climbrate(self, value):
-        self._climbrate = value
+        if value > 6.8:
+            self._climbrate = 6.8
+        elif value < -6.8:
+            self._climbrate = -6.8
+        else:
+            self._climbrate = value
         self.climbrate_changed.emit(self._climbrate)
 
     @QtCore.pyqtProperty(float, notify=airspeed_changed)
