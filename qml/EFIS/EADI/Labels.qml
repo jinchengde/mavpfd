@@ -9,6 +9,7 @@ Item {
     property double altitudeBug: 0
     property double pressure: 0
 
+    property int armstatus: 0 //0->disarm, 1->arm
     property int pressureMode: 0 // 0->STD, 1->MB, 2->IN
     property string flightMode: '' // 0->OFF, 1->FD, 2->CMD
     property int speedMode: 0 // 0->OFF, 1->FMC SPD
@@ -31,20 +32,20 @@ Item {
     }
 
     // Mach Number
-    Text {
-        x: 4
-        y: 211
-        width: 54
-        height: 20
-        font.family: "Courier Std"
-        font.pixelSize: 16
-        horizontalAlignment: Text.AlignRight
-        verticalAlignment: Text.AlignVCenter
-        color: "#ffffff"
-        antialiasing: true
-        text: machNumber < 1 ? machNumber.toFixed(3).substring(1) :
-                               machNumber < 10 ?  machNumber.toFixed(2) : machNumber.toFixed(1)
-    }
+    // Text {
+    //     x: 4
+    //     y: 211
+    //     width: 54
+    //     height: 20
+    //     font.family: "Courier Std"
+    //     font.pixelSize: 16
+    //     horizontalAlignment: Text.AlignRight
+    //     verticalAlignment: Text.AlignVCenter
+    //     color: "#ffffff"
+    //     antialiasing: true
+    //     text: machNumber < 1 ? machNumber.toFixed(3).substring(1) :
+    //                            machNumber < 10 ?  machNumber.toFixed(2) : machNumber.toFixed(1)
+    // }
 
     // Altitude bug
     Text {
@@ -65,7 +66,7 @@ Item {
         text: altitudeBug.toFixed(0)
     }
 
-    // Pressure Mode
+    // Flight Mode
     Text {
         y: 213
         font.family: "Courier Std"
@@ -82,22 +83,23 @@ Item {
 
     }
 
-    // Flight Mode
-    // Text {
-    //     y: 33
-    //     width: 128
-    //     height: 18
-    //     font.family: "Courier Std"
-    //     font.pixelSize: 16
-    //     horizontalAlignment: Text.AlignHCenter
-    //     verticalAlignment: Text.AlignVCenter
-    //     anchors.horizontalCenter: parent.horizontalCenter
-    //     color: "#00ff00"
-    //     antialiasing: true
-    //     text: flightMode === 1 ? "FD" :
-    //                              flightMode === 2 ? "CMD" : ""
+    // Arm or Disarm Status
+    Text {
+        y: 33
+        width: 128
+        height: 18
+        font.family: "Courier Std"
+        font.pixelSize: 16
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        color: armstatus === 0 ? "#00ff00" :
+                                armstatus === 1? "#FF0000" : ""
+        antialiasing: true
+        text: armstatus === 0 ? "DISARM" :
+                                 armstatus === 1 ? "ARM" : ""
 
-    // }
+    }
 
     // Speed Mode
     Text {

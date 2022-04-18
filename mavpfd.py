@@ -27,7 +27,7 @@ import math
 
 from multiprocessing import Process, freeze_support, Pipe, Semaphore, Event, Lock, Queue
 
-from vehicle import Attitude, VFR_HUD, Global_Position_INT, NAV_Controller_Output, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
+from vehicle import Attitude, VFR_HUD, Global_Position_INT, NAV_Controller_Output, CMD_Ack, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
 
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtQuick import QQuickView
@@ -42,7 +42,6 @@ class Connection(object):
         self._last_packet_received = 0
         self._last_attitude_received = 0
         self._last_vfr_hud_received = 0
-        self._last_heartbeat = 0
         self._last_global_position_int = 0
         self._last_mav_controller_output = 0
         self._last_msg_send = 0
@@ -156,10 +155,12 @@ class Link(object):
                         conn._last_mav_controller_output = now
                         conn._msglist.append(NAV_Controller_Output(m))
                 elif m._type == 'HEARTBEAT':
-                    if now - conn._last_heartbeat > 0.1:
-                        conn._last_heartbeat = now
-                        flightmode = mavutil.mode_string_v10(m)
-                        conn._msglist.append(FlightState(flightmode))
+                    flightmode = mavutil.mode_string_v10(m)
+                    arm_disarm = conn._mav.motors_armed()
+                    conn._msglist.append(FlightState(flightmode, arm_disarm))
+                elif m._type == 'COMMAND_ACK':
+                    conn._msglist.append(CMD_Ack(m))
+                
                 continue
 
         if not packet_received:
@@ -192,10 +193,10 @@ def update_mav(parent_pipe_recv):
     if parent_pipe_recv.poll():
             objList = parent_pipe_recv.recv()
             for obj in objList:
-                if isinstance(obj,Attitude):
+                if isinstance(obj, Attitude):
                     vehicle_status.pitch = obj.pitch
                     vehicle_status.roll = obj.roll
-                elif isinstance(obj,VFR_HUD):
+                elif isinstance(obj, VFR_HUD):
                     vehicle_status.airspeed = obj.airspeed
                     vehicle_status.yaw = obj.heading
                     vehicle_status.climbrate = obj.climbRate
@@ -207,6 +208,11 @@ def update_mav(parent_pipe_recv):
                     vehicle_status.nav_yaw = obj.nav_yaw
                 elif isinstance(obj, FlightState):
                     vehicle_status.flightmode = obj.mode
+                    vehicle_status.arm_disarm = obj.arm_disarm
+                # elif isinstance(obj, CMD_Ack):
+                #     if obj.cmd == MAV_CMD_COMPONENT_ARM_DISARM:
+                #         vehicle_status._arm_disarm = obj.result
+                #         print(obj.result)
 
 def childProcessRun(parm, p):
     parent_pipe_recv,child_pipe_send = p

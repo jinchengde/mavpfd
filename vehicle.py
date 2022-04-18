@@ -50,8 +50,9 @@ class BatteryInfo():
         
 class FlightState():
     '''Mode and arm state.'''
-    def __init__(self,mode):
+    def __init__(self,mode,arm_disarm):
         self.mode = mode
+        self.arm_disarm = arm_disarm
         
 class WaypointInfo():
     '''Current and final waypoint numbers, and the distance
@@ -67,6 +68,12 @@ class FPS():
     '''Stores intended frame rate information.'''
     def __init__(self,fps):
         self.fps = fps # if fps is zero, then the frame rate is unrestricted
+
+class CMD_Ack():
+    '''command ack message'''
+    def __init__(self,ack):
+        self.cmd = ack.command
+        self.result = ack.result
         
 from multiprocessing.sharedctypes import Value
 from PyQt5 import QtCore
@@ -85,6 +92,7 @@ class Vehicle_Status(QtCore.QObject):
     nav_roll_changed = QtCore.pyqtSignal(float)
     nav_yaw_changed = QtCore.pyqtSignal(int)
     flightmode_changed = QtCore.pyqtSignal(str)
+    arm_disarm_changed = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
@@ -98,6 +106,7 @@ class Vehicle_Status(QtCore.QObject):
         self._nav_roll = 0.0
         self._nav_yaw = 0
         self._flightmode = ''
+        self._arm_disarm = 0
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):
@@ -191,8 +200,23 @@ class Vehicle_Status(QtCore.QObject):
 
     @flightmode.setter
     def flightmode(self, value):
+        if self._flightmode == value:
+            return
         self._flightmode = value
         self.flightmode_changed.emit(self._flightmode)
+
+    @QtCore.pyqtProperty(int, notify=arm_disarm_changed)
+    def arm_disarm(self):
+        return self._arm_disarm
+
+    @arm_disarm.setter
+    def arm_disarm(self, value):
+        if self._arm_disarm == value:
+            return
+        if value > 0:
+            value = 1
+        self._arm_disarm = value
+        self.arm_disarm_changed.emit(self._arm_disarm)
     
 
 
