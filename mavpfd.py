@@ -207,6 +207,8 @@ def update_mav(parent_pipe_recv):
                     vehicle_status.nav_roll = obj.nav_roll
                     vehicle_status.nav_yaw = obj.nav_yaw
                     vehicle_status.target_alt = obj.alt_error
+                    vehicle_status.target_aspd = obj.aspd_error
+
                 elif isinstance(obj, FlightState):
                     vehicle_status.flightmode = obj.mode
                     vehicle_status.arm_disarm = obj.arm_disarm
