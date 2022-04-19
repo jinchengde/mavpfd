@@ -88,7 +88,8 @@ class Link(object):
         self._inactivity_timeout = 10
         self._reconnect_interval = 5
         self._fps = 10.0
-        self._sendDelay = (1.0/self._fps)*0.9        
+        self._sendDelay = (1.0/self._fps)*0.9     
+        self._get_system_info = False   
 
     def maintain_connections(self):
         '''reconnect the mavlink'''
@@ -157,7 +158,11 @@ class Link(object):
                 elif m._type == 'HEARTBEAT':
                     flightmode = mavutil.mode_string_v10(m)
                     arm_disarm = conn._mav.motors_armed()
-                    conn._msglist.append(FlightState(flightmode, arm_disarm))
+                    if self._get_system_info == False:
+                        target_system = conn._mav.target_system
+                        target_component = conn._mav.target_component
+                        self._get_system_info = True
+                    conn._msglist.append(FlightState(flightmode, arm_disarm, target_system, target_component))
                 elif m._type == 'COMMAND_ACK':
                     conn._msglist.append(CMD_Ack(m))
                 
@@ -208,10 +213,12 @@ def update_mav(parent_pipe_recv):
                     vehicle_status.nav_yaw = obj.nav_yaw
                     vehicle_status.target_alt = obj.alt_error
                     vehicle_status.target_aspd = obj.aspd_error
-
                 elif isinstance(obj, FlightState):
                     vehicle_status.flightmode = obj.mode
                     vehicle_status.arm_disarm = obj.arm_disarm
+                    vehicle_status.target_system = obj.target_system
+                    vehicle_status.target_component = obj.target_component
+
                 # elif isinstance(obj, CMD_Ack):
                 #     if obj.cmd == MAV_CMD_COMPONENT_ARM_DISARM:
                 #         vehicle_status._arm_disarm = obj.result

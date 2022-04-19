@@ -52,9 +52,11 @@ class BatteryInfo():
         
 class FlightState():
     '''Mode and arm state.'''
-    def __init__(self,mode,arm_disarm):
+    def __init__(self,mode,arm_disarm,target_system, target_component):
         self.mode = mode
         self.arm_disarm = arm_disarm
+        self.target_system = target_system
+        self.target_component = target_component
         
 class WaypointInfo():
     '''Current and final waypoint numbers, and the distance
@@ -113,6 +115,8 @@ class Vehicle_Status(QtCore.QObject):
         self._arm_disarm = 0
         self._target_alt = 0.0
         self._target_aspd = 0.0
+        self._target_system = 0.0
+        self._target_component = 0.0
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):
@@ -241,5 +245,27 @@ class Vehicle_Status(QtCore.QObject):
     def target_aspd(self, value):
         self._target_aspd = self._airspeed + value
         self.target_aspd_changed.emit(self._target_aspd)
+
+    @QtCore.pyqtProperty(int)
+    def target_system(self):
+        return self._target_system
+
+    @target_system.setter
+    def target_system(self, value):
+        if self._target_system == value:
+            return
+        self._target_system = value
+
+    @QtCore.pyqtProperty(int)
+    def target_component(self):
+        return self._target_component
+
+    @target_component.setter
+    def target_component(self, value):
+        if self._target_component == value:
+            return
+        self._target_component = value
+
+    
 
 
