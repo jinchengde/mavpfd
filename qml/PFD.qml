@@ -49,7 +49,7 @@ Window {
                     vsi.climbRate: pfd.climbrate
                     labels.flightMode: pfd.flightmode
                     labels.armstatus: pfd.arm_disarm
-
+                    alt.bugValue: pfd.target_alt
                 }
             }
         }

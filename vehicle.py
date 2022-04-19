@@ -34,6 +34,7 @@ class NAV_Controller_Output():
         self.nav_roll = controller_output.nav_roll
         self.nav_pitch = controller_output.nav_pitch
         self.nav_yaw = controller_output.target_bearing
+        self.alt_error = controller_output.alt_error
         
 class Global_Position_INT():
     '''Altitude relative to ground (GPS).'''
@@ -93,6 +94,7 @@ class Vehicle_Status(QtCore.QObject):
     nav_yaw_changed = QtCore.pyqtSignal(int)
     flightmode_changed = QtCore.pyqtSignal(str)
     arm_disarm_changed = QtCore.pyqtSignal(int)
+    target_alt_changed = QtCore.pyqtSignal(float)
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
@@ -107,6 +109,7 @@ class Vehicle_Status(QtCore.QObject):
         self._nav_yaw = 0
         self._flightmode = ''
         self._arm_disarm = 0
+        self._target_alt = 0.0
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):
@@ -218,5 +221,13 @@ class Vehicle_Status(QtCore.QObject):
         self._arm_disarm = value
         self.arm_disarm_changed.emit(self._arm_disarm)
     
+    @QtCore.pyqtProperty(float, notify=target_alt_changed)
+    def target_alt(self):
+        return self._target_alt
+
+    @target_alt.setter
+    def target_alt(self, value):
+        self._target_alt = self._alt + value
+        self.target_alt_changed.emit(self._target_alt)
 
 
