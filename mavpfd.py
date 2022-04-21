@@ -18,7 +18,7 @@ from __future__ import print_function
 
 from functools import partial
 
-from pymavlink import mavutil
+from pymavlink import mavutil, mavwp
 import sys
 import time
 import threading
@@ -47,6 +47,7 @@ class Connection(object):
         self._last_msg_send = 0
         self._last_connection_attempt = 0
         self._msglist = []
+        self._wplist = False
 
     def clearMsgList(self):
         # clean the msg list in function, cant clear it directly
@@ -78,6 +79,16 @@ class Connection(object):
         if value == True or value == False:
             self._active = value     
 
+    @property
+    def wplist(self):
+        '''active property'''
+        return self._wplist
+        
+    @wplist.setter
+    def wplist(self, value):
+        if value == True or value == False:
+            self._wplist = value   
+
 class Link(object):
     '''mavlink connect maintain'''
     def __init__(self, addrs, child_pipe_send):
@@ -89,6 +100,10 @@ class Link(object):
         self._reconnect_interval = 5
         self._fps = 10.0
         self._sendDelay = (1.0/self._fps)*0.9
+        self._wp_count = 0
+        self._expected_count = 0
+        self._wp_received = {}
+        self._wp_requested = {}
 
     def maintain_connections(self):
         '''reconnect the mavlink'''
@@ -120,6 +135,59 @@ class Link(object):
                 conn._last_msg_send = time.time()
             else:
                 continue
+
+    def get_wp_list(self, conn):
+        self._wp = mavwp.MAVWPLoader()
+        conn._mav.waypoint_request_list_send()
+
+    def missing_wps_to_request(self):
+        ret = []
+        tnow = time.time()
+        next_seq = self._wp_count
+        for i in range(5):
+            seq = next_seq+i
+            if seq+1 > self._expected_count:
+                continue
+            if seq in self._wp_requested and tnow - self._wp_requested[seq] < 2:
+                continue
+            ret.append(seq)
+        return ret
+
+    def send_wp_requests(self, conn, wps=None):
+        '''send waypoint item request'''
+        if wps is None:
+            self._wp_count = 0
+            self._wp_received = {}
+            self._wp_requested = {}
+            wps = self.missing_wps_to_request()
+        tnow = time.time()
+        for seq in wps:
+            conn._mav.waypoint_request_send(seq)
+
+    def send_mission_ack(self, conn):
+        '''send waypoint mission ack'''
+        conn._mav.mav.mission_ack_send(conn._mav.target_system, conn._mav.target_component, mavutil.mavlink.MAV_CMD_ACK_OK) 
+
+    def wp_from_mission_item_int(self, wp):
+        '''convert a MISSION_ITEM_INT to a MISSION_ITEM'''
+        wp2 = mavutil.mavlink.MAVLink_mission_item_message(wp.target_system,
+                                                           wp.target_component,
+                                                           wp.seq,
+                                                           wp.frame,
+                                                           wp.command,
+                                                           wp.current,
+                                                           wp.autocontinue,
+                                                           wp.param1,
+                                                           wp.param2,
+                                                           wp.param3,
+                                                           wp.param4,
+                                                           wp.x*1.0e-7,
+                                                           wp.y*1.0e-7,
+                                                           wp.z)
+        # preserve srcSystem as that is used for naming waypoint file
+        wp2._header.srcSystem = wp.get_srcSystem()
+        wp2._header.srcComponent = wp.get_srcComponent()
+        return wp2
 
     def handle_messages(self):
         '''receive msg from mavlink''' 
@@ -156,6 +224,9 @@ class Link(object):
                         conn._msglist.append(NAV_Controller_Output(m))
                 elif m._type == 'HEARTBEAT':
                     flightmode = mavutil.mode_string_v10(m)
+                    if conn.wplist == False and flightmode == 'AUTO':
+                        self.get_wp_list(conn)
+                        conn.wplist = True
                     arm_disarm = conn._mav.motors_armed()
                     target_system = conn._mav.target_system
                     target_component = conn._mav.target_component
@@ -163,6 +234,24 @@ class Link(object):
                     conn._msglist.append(FlightState(flightmode, arm_disarm, target_system, target_component))
                 elif m._type == 'COMMAND_ACK':
                     conn._msglist.append(CMD_Ack(m))
+                elif m._type in ['WAYPOINT_COUNT','MISSION_COUNT']:
+                    self._expected_count = m.count
+                    self.send_wp_requests(conn)
+                elif m._type in ['WAYPOINT', 'MISSION_ITEM', 'MISSION_ITEM_INT']:
+                    if m.get_type() == 'MISSION_ITEM_INT':
+                        if getattr(m, 'mission_type', 0) != 0:
+                            # this is not a mission item, likely fence
+                            return
+                        # our internal structure assumes MISSION_ITEM'''
+                        m = self.wp_from_mission_item_int(m)
+                    if m.seq < self._wp_count:
+                        #print("DUPLICATE %u" % m.seq)
+                        return
+                    if m.seq+1 > self._expected_count:
+                        return
+                    if m.seq + 1 == self._expected_count:
+                        self.send_mission_ack(conn)
+                    self._wp_received[m.seq] = m
                 
                 continue
 

@@ -10,8 +10,9 @@
             "request": "launch",
             "program": "${workspaceFolder}\\mavpfd.py",
             "console": "integratedTerminal",
-            "justMyCode": true,
-            "args": ["udp:127.0.0.1:14551"]
+            "justMyCode": false,
+            //"args": ["udp:127.0.0.1:14551"]
+            "args": ["tcp:172.31.218.58:5760"]
         }
     ]
 }
