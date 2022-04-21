@@ -88,8 +88,7 @@ class Link(object):
         self._inactivity_timeout = 10
         self._reconnect_interval = 5
         self._fps = 10.0
-        self._sendDelay = (1.0/self._fps)*0.9     
-        self._get_system_info = False   
+        self._sendDelay = (1.0/self._fps)*0.9
 
     def maintain_connections(self):
         '''reconnect the mavlink'''
@@ -158,10 +157,9 @@ class Link(object):
                 elif m._type == 'HEARTBEAT':
                     flightmode = mavutil.mode_string_v10(m)
                     arm_disarm = conn._mav.motors_armed()
-                    if self._get_system_info == False:
-                        target_system = conn._mav.target_system
-                        target_component = conn._mav.target_component
-                        self._get_system_info = True
+                    target_system = conn._mav.target_system
+                    target_component = conn._mav.target_component
+                    self._get_system_info = True
                     conn._msglist.append(FlightState(flightmode, arm_disarm, target_system, target_component))
                 elif m._type == 'COMMAND_ACK':
                     conn._msglist.append(CMD_Ack(m))
