@@ -49,6 +49,14 @@ class BatteryInfo():
         self.voltage = batMsg.voltage_battery/1000.0 # Volts
         self.current = batMsg.current_battery/100.0 # Amps
         self.batRemain = batMsg.battery_remaining # %
+
+class MISSION_CURRENT():
+    '''mission status'''
+    def __init__(self, seq, x, y, z):
+        self.seq = seq
+        self.x = x
+        self.y = y
+        self.z = z
         
 class FlightState():
     '''Mode and arm state.'''
@@ -234,7 +242,10 @@ class Vehicle_Status(QtCore.QObject):
 
     @target_alt.setter
     def target_alt(self, value):
-        self._target_alt = self._alt + value
+        if self._flightmode == 'AUTO':
+            self._target_alt = value
+        else:
+            self._target_alt = self._alt + value
         self.target_alt_changed.emit(self._target_alt)
 
     @QtCore.pyqtProperty(float, notify=target_aspd_changed)

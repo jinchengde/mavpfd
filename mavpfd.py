@@ -27,7 +27,7 @@ import math
 
 from multiprocessing import Process, freeze_support, Pipe, Semaphore, Event, Lock, Queue
 
-from vehicle import Attitude, VFR_HUD, Global_Position_INT, NAV_Controller_Output, CMD_Ack, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
+from vehicle import Attitude, VFR_HUD, Global_Position_INT, NAV_Controller_Output, CMD_Ack, MISSION_CURRENT, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
 
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtQuick import QQuickView
@@ -104,6 +104,8 @@ class Link(object):
         self._expected_count = 0
         self._wp_received = {}
         self._wp_requested = {}
+        self._get_mission_item = False
+        self._current_seq = 0
 
     def maintain_connections(self):
         '''reconnect the mavlink'''
@@ -160,7 +162,6 @@ class Link(object):
             self._wp_received = {}
             self._wp_requested = {}
             wps = self.missing_wps_to_request()
-        tnow = time.time()
         for seq in wps:
             conn._mav.waypoint_request_send(seq)
 
@@ -224,9 +225,10 @@ class Link(object):
                         conn._msglist.append(NAV_Controller_Output(m))
                 elif m._type == 'HEARTBEAT':
                     flightmode = mavutil.mode_string_v10(m)
-                    if conn.wplist == False and flightmode == 'AUTO':
-                        self.get_wp_list(conn)
-                        conn.wplist = True
+                    if flightmode == 'AUTO':
+                        if conn.wplist == False:
+                            self.get_wp_list(conn)
+                            conn.wplist = True
                     arm_disarm = conn._mav.motors_armed()
                     target_system = conn._mav.target_system
                     target_component = conn._mav.target_component
@@ -251,8 +253,12 @@ class Link(object):
                         return
                     if m.seq + 1 == self._expected_count:
                         self.send_mission_ack(conn)
-                    self._wp_received[m.seq] = m
-                
+                        self._get_mission_item = True
+                    self._wp_received[m.seq] = m     
+                elif m._type == 'MISSION_CURRENT':
+                    self._current_seq = m.seq
+                    if len(self._wp_received) != 0:
+                        conn._msglist.append(MISSION_CURRENT(m.seq, self._wp_received[m.seq].x, self._wp_received[m.seq].y, self._wp_received[m.seq].z))
                 continue
 
         if not packet_received:
@@ -298,13 +304,17 @@ def update_mav(parent_pipe_recv):
                     vehicle_status.nav_pitch = obj.nav_pitch
                     vehicle_status.nav_roll = obj.nav_roll
                     vehicle_status.nav_yaw = obj.nav_yaw
-                    vehicle_status.target_alt = obj.alt_error
+                    if vehicle_status.flightmode != 'AUTO':
+                        vehicle_status.target_alt = obj.alt_error
                     vehicle_status.target_aspd = obj.aspd_error
                 elif isinstance(obj, FlightState):
                     vehicle_status.flightmode = obj.mode
                     vehicle_status.arm_disarm = obj.arm_disarm
                     vehicle_status.target_system = obj.target_system
                     vehicle_status.target_component = obj.target_component
+                elif isinstance(obj, MISSION_CURRENT):
+                    if vehicle_status.flightmode == 'AUTO':
+                        vehicle_status.target_alt = obj.z
 
                 # elif isinstance(obj, CMD_Ack):
                 #     if obj.cmd == MAV_CMD_COMPONENT_ARM_DISARM:
