@@ -7,6 +7,7 @@ Item {
     property double airspeedBug: 0
     property double machNumber: 0
     property double altitudeBug: 0
+    property bool altitudeBugVisible: false
     property double pressure: 0
 
     property int armstatus: 0 //0->disarm, 1->arm
@@ -17,19 +18,19 @@ Item {
     property int vnav: 0 // 0->OFF, 1->ALT, 2->IAS, 3->VS, 4->ALT SEL, 5->GS, 6-> GS ARM
 
     // Airspeed Bug
-    Text {
-        x: 8
-        y: 19
-        width: 51
-        height: 20
-        font.family: "Courier Std"
-        font.pixelSize: 16
-        horizontalAlignment: Text.AlignRight
-        verticalAlignment: Text.AlignVCenter
-        color: "#ff00ff"
-        antialiasing: true
-        text: airspeedBug.toFixed(0)
-    }
+    // Text {
+    //     x: 8
+    //     y: 19
+    //     width: 51
+    //     height: 20
+    //     font.family: "Courier Std"
+    //     font.pixelSize: 16
+    //     horizontalAlignment: Text.AlignRight
+    //     verticalAlignment: Text.AlignVCenter
+    //     color: "#ff00ff"
+    //     antialiasing: true
+    //     text: airspeedBug.toFixed(0)
+    // }
 
     // Mach Number
     // Text {
@@ -61,6 +62,7 @@ Item {
         horizontalAlignment: Text.AlignRight
         verticalAlignment: Text.AlignVCenter
         color: "#ff00ff"
+        visible: altitudeBugVisible
 
         antialiasing: true
         text: altitudeBug.toFixed(0)

@@ -50,6 +50,8 @@ Window {
                     labels.flightMode: pfd.flightmode
                     labels.armstatus: pfd.arm_disarm
                     alt.bugValue: pfd.target_alt
+                    labels.altitudeBugVisible: pfd.target_alt_visible
+                    labels.altitudeBug: pfd.target_alt
                     asi.bugValue: pfd.target_aspd
                 }
             }

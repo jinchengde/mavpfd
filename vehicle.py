@@ -107,6 +107,7 @@ class Vehicle_Status(QtCore.QObject):
     arm_disarm_changed = QtCore.pyqtSignal(int)
     target_alt_changed = QtCore.pyqtSignal(float)
     target_aspd_changed = QtCore.pyqtSignal(float)
+    target_alt_visible_changed = QtCore.pyqtSignal(bool)
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
@@ -125,6 +126,7 @@ class Vehicle_Status(QtCore.QObject):
         self._target_aspd = 0.0
         self._target_system = 0.0
         self._target_component = 0.0
+        self._target_alt_visible = False
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):
@@ -277,6 +279,17 @@ class Vehicle_Status(QtCore.QObject):
             return
         self._target_component = value
 
+    
+    @QtCore.pyqtProperty(float, notify=target_alt_visible_changed)
+    def target_alt_visible(self):
+        return self._target_alt_visible
+
+    @target_alt_visible.setter
+    def target_alt_visible(self, value):
+        if self._target_alt_visible == value:
+            return
+        self._target_alt_visible = value
+        self.target_alt_visible_changed.emit(self._target_alt_visible)
     
 
 

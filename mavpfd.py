@@ -306,6 +306,7 @@ def update_mav(parent_pipe_recv):
                     vehicle_status.nav_yaw = obj.nav_yaw
                     if vehicle_status.flightmode != 'AUTO':
                         vehicle_status.target_alt = obj.alt_error
+                        vehicle_status.target_alt_visible = False
                     vehicle_status.target_aspd = obj.aspd_error
                 elif isinstance(obj, FlightState):
                     vehicle_status.flightmode = obj.mode
@@ -315,6 +316,7 @@ def update_mav(parent_pipe_recv):
                 elif isinstance(obj, MISSION_CURRENT):
                     if vehicle_status.flightmode == 'AUTO':
                         vehicle_status.target_alt = obj.z
+                        vehicle_status.target_alt_visible = True
 
                 # elif isinstance(obj, CMD_Ack):
                 #     if obj.cmd == MAV_CMD_COMPONENT_ARM_DISARM:
