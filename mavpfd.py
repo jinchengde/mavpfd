@@ -27,13 +27,24 @@ import math
 
 from multiprocessing import Process, freeze_support, Pipe, Semaphore, Event, Lock, Queue
 
-from vehicle import Attitude, VFR_HUD, Global_Position_INT, NAV_Controller_Output, CMD_Ack, MISSION_CURRENT, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
+from vehicle import EKF_STATUS, Attitude, VFR_HUD, Global_Position_INT, NAV_Controller_Output, CMD_Ack, MISSION_CURRENT, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
 
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtQuick import QQuickView
 from PyQt5.QtCore import QUrl, QTimer
 from PyQt5.QtQml import QQmlApplicationEngine
 
+EKF_ATTITUDE = 1
+EKF_VELOCITY_HORIZ = 2
+EKF_VELOCITY_VERT = 4
+EKF_POS_HORIZ_REL = 8
+EKF_POS_HORIZ_ABS = 16
+EKF_POS_VERT_ABS = 32
+EKF_POS_VERT_AGL = 64
+EKF_CONST_POS_MODE = 128
+EKF_PRED_POS_HORIZ_REL = 256
+EKF_PRED_POS_HORIZ_ABS = 512
+EKF_UNINITIALIZED = 1024
 class Connection(object):
     '''mavlink connection'''
     def __init__(self, addr):
@@ -259,6 +270,23 @@ class Link(object):
                     self._current_seq = m.seq
                     if len(self._wp_received) != 0:
                         conn._msglist.append(MISSION_CURRENT(m.seq, self._wp_received[m.seq].x, self._wp_received[m.seq].y, self._wp_received[m.seq].z))
+                elif m._type == 'EKF_STATUS_REPORT':
+                    ekfhealthy = 0
+                    ekfatitude = m.flags & 0x01 & EKF_ATTITUDE
+                    ekfvelocity = m.flags & 0x06 & (EKF_VELOCITY_HORIZ + EKF_VELOCITY_VERT)
+                    ekfposhorizon = ( m.flags & 0x08 & EKF_POS_HORIZ_REL ) or ( m.flags & 0x10 & EKF_POS_HORIZ_ABS)
+                    ekfposvert = ( m.flags & 0x20 & EKF_POS_VERT_ABS ) or ( m.flags & 0x40 & EKF_POS_VERT_AGL)
+                    ekfconst = m.flags & 0x80 & EKF_CONST_POS_MODE
+                    # ekfpredpos = ( m.flags & 0x0100 & EKF_PRED_POS_HORIZ_REL ) or ( m.flags & 0x0200 & EKF_PRED_POS_HORIZ_ABS)
+                    ekfunhealthy = m.flags & 0x0400 & EKF_UNINITIALIZED
+                    if ekfunhealthy > 0:
+                        ekfhealthy = 0
+                    elif ekfconst > 0:
+                        ekfhealthy = 1
+                    elif ekfatitude > 0 and ekfposhorizon > 0 and ekfposvert > 0 and ekfvelocity > 0:
+                        ekfhealthy = 2
+                    conn._msglist.append(EKF_STATUS(ekfhealthy))
+
                 continue
 
         if not packet_received:
@@ -317,6 +345,8 @@ def update_mav(parent_pipe_recv):
                     if vehicle_status.flightmode == 'AUTO':
                         vehicle_status.target_alt = obj.z
                         vehicle_status.target_alt_visible = True
+                elif isinstance(obj, EKF_STATUS):
+                    vehicle_status.ekf_healthy = obj.healthy
 
                 # elif isinstance(obj, CMD_Ack):
                 #     if obj.cmd == MAV_CMD_COMPONENT_ARM_DISARM:

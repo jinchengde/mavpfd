@@ -53,6 +53,7 @@ Window {
                     labels.altitudeBugVisible: pfd.target_alt_visible
                     labels.altitudeBug: pfd.target_alt
                     asi.bugValue: pfd.target_aspd
+                    labels.ekfstatus : pfd.ekf_healthy
                 }
             }
         }

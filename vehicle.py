@@ -86,6 +86,11 @@ class CMD_Ack():
     def __init__(self,ack):
         self.cmd = ack.command
         self.result = ack.result
+
+class EKF_STATUS():
+    '''ekf status'''
+    def __init__(self, healthy):
+        self.healthy = healthy
         
 from multiprocessing.sharedctypes import Value
 from PyQt5 import QtCore
@@ -108,6 +113,7 @@ class Vehicle_Status(QtCore.QObject):
     target_alt_changed = QtCore.pyqtSignal(float)
     target_aspd_changed = QtCore.pyqtSignal(float)
     target_alt_visible_changed = QtCore.pyqtSignal(bool)
+    ekf_healthy_changed = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
@@ -127,6 +133,7 @@ class Vehicle_Status(QtCore.QObject):
         self._target_system = 0.0
         self._target_component = 0.0
         self._target_alt_visible = False
+        self._ekf_healthy = 2
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):
@@ -290,6 +297,17 @@ class Vehicle_Status(QtCore.QObject):
             return
         self._target_alt_visible = value
         self.target_alt_visible_changed.emit(self._target_alt_visible)
+
+    @QtCore.pyqtProperty(int, notify=ekf_healthy_changed)
+    def ekf_healthy(self):
+        return self._ekf_healthy
+
+    @ekf_healthy.setter
+    def ekf_healthy(self, value):
+        if self._ekf_healthy == value:
+            return
+        self._ekf_healthy = value
+        self.ekf_healthy_changed.emit(self._ekf_healthy)
     
 
 
