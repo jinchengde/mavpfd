@@ -10,6 +10,7 @@ Item {
     property bool altitudeBugVisible: false
     property double pressure: 0
 
+    property int ekfstatus: 2
     property int armstatus: 0 //0->disarm, 1->arm
     property int pressureMode: 0 // 0->STD, 1->MB, 2->IN
     property string flightMode: '' // 0->OFF, 1->FD, 2->CMD
@@ -120,22 +121,25 @@ Item {
     // LNAV TOP
     Text {
         x: 132
-        y: 5
+        y: 10
         width: 38
         height: 10
-        color: "#00ff00"
-        font.pixelSize: 9
+        color: ekfstatus === 2 ? "#00ff00" :
+                ekfstatus === 1 ? "#FFFF00" :
+                ekfstatus === 0 ? "#FF0000" : ""
+        font.pixelSize: 16
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         font.family: "Courier Std"
         antialiasing: true
-        text: lnav === 1 ? "HDG SEL" :
-                           lnav === 2 ? "VOR/LOC" :
-                                        lnav === 3 ? "HDG SEL" :
-                                                     lnav === 4 ? "APR" :
-                                                                  lnav === 5 ? "APR" :
-                                                                               lnav === 6 ? "BC" :
-                                                                                            lnav === 7 ? "BC" : ""
+        text: "EKF"
+        // text: lnav === 1 ? "HDG SEL" :
+        //                    lnav === 2 ? "VOR/LOC" :
+        //                                 lnav === 3 ? "HDG SEL" :
+        //                                              lnav === 4 ? "APR" :
+        //                                                           lnav === 5 ? "APR" :
+        //                                                                        lnav === 6 ? "BC" :
+        //                                                                                     lnav === 7 ? "BC" : ""
     }
 
     // LNAV BOTTOM
