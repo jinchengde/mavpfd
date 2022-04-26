@@ -91,6 +91,25 @@ class EKF_STATUS():
     '''ekf status'''
     def __init__(self, healthy):
         self.healthy = healthy
+
+class GPS_RAW_INT():
+    '''gps raw int'''
+    GPS_FIX_TYPE_NO_GPS = 0
+    GPS_FIX_TYPE_NO_FIX	= 1 
+    GPS_FIX_TYPE_2D_FIX	= 2
+    GPS_FIX_TYPE_3D_FIX	= 3
+    GPS_FIX_TYPE_DGPS = 4
+    GPS_FIX_TYPE_RTK_FLOAT = 5	
+    GPS_FIX_TYPE_RTK_FIXED = 6	
+    GPS_FIX_TYPE_STATIC = 7	
+    GPS_FIX_TYPE_PPP = 8 
+
+    def __init__(self, gps_raw_int):
+        self.fix_type = gps_raw_int.fix_type
+        self.eph = gps_raw_int.eph
+        self.epv = gps_raw_int.epv
+        self.vel = gps_raw_int.vel
+        self.satellites_visible = gps_raw_int.satellites_visible
         
 from multiprocessing.sharedctypes import Value
 from PyQt5 import QtCore
@@ -114,6 +133,8 @@ class Vehicle_Status(QtCore.QObject):
     target_aspd_changed = QtCore.pyqtSignal(float)
     target_alt_visible_changed = QtCore.pyqtSignal(bool)
     ekf_healthy_changed = QtCore.pyqtSignal(int)
+    gps_visible_changed = QtCore.pyqtSignal(int)
+    gps_lock_type_changed = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
@@ -134,6 +155,8 @@ class Vehicle_Status(QtCore.QObject):
         self._target_component = 0.0
         self._target_alt_visible = False
         self._ekf_healthy = 2
+        self._gps_visible = 0
+        self._gps_lock_type = 0
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):

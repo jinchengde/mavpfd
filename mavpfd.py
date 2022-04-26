@@ -27,10 +27,9 @@ import math
 
 from multiprocessing import Process, freeze_support, Pipe, Semaphore, Event, Lock, Queue
 
-from vehicle import EKF_STATUS, Attitude, VFR_HUD, Global_Position_INT, NAV_Controller_Output, CMD_Ack, MISSION_CURRENT, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
+from vehicle import EKF_STATUS, GPS_RAW_INT, Attitude, VFR_HUD, Global_Position_INT, NAV_Controller_Output, CMD_Ack, MISSION_CURRENT, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
 
 from PyQt5.QtGui import QGuiApplication
-from PyQt5.QtQuick import QQuickView
 from PyQt5.QtCore import QUrl, QTimer
 from PyQt5.QtQml import QQmlApplicationEngine
 
@@ -45,6 +44,7 @@ EKF_CONST_POS_MODE = 128
 EKF_PRED_POS_HORIZ_REL = 256
 EKF_PRED_POS_HORIZ_ABS = 512
 EKF_UNINITIALIZED = 1024
+
 class Connection(object):
     '''mavlink connection'''
     def __init__(self, addr):
@@ -55,6 +55,7 @@ class Connection(object):
         self._last_vfr_hud_received = 0
         self._last_global_position_int = 0
         self._last_mav_controller_output = 0
+        self._last_gps_raw_int = 0
         self._last_msg_send = 0
         self._last_connection_attempt = 0
         self._msglist = []
@@ -286,6 +287,10 @@ class Link(object):
                     elif ekfatitude > 0 and ekfposhorizon > 0 and ekfposvert > 0 and ekfvelocity > 0:
                         ekfhealthy = 2
                     conn._msglist.append(EKF_STATUS(ekfhealthy))
+                elif m._type == 'GPS_RAW_INT':
+                    if now - conn._last_gps_raw_int > 0.1:
+                        conn._last_gps_raw_int = now
+                        conn._msglist.append(GPS_RAW_INT(m))
 
                 continue
 
@@ -347,6 +352,9 @@ def update_mav(parent_pipe_recv):
                         vehicle_status.target_alt_visible = True
                 elif isinstance(obj, EKF_STATUS):
                     vehicle_status.ekf_healthy = obj.healthy
+                elif isinstance(obj, GPS_RAW_INT):
+                    vehicle_status._gps_visible = obj.satellites_visible
+                    vehicle_status._gps_lock_type = obj.fix_type
 
                 # elif isinstance(obj, CMD_Ack):
                 #     if obj.cmd == MAV_CMD_COMPONENT_ARM_DISARM:
