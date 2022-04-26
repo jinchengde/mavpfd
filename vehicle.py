@@ -192,6 +192,8 @@ class Vehicle_Status(QtCore.QObject):
     
     @alt.setter
     def alt(self, value):
+        if value == -0:
+            value = 0
         self._alt = value
         self.alt_changed.emit(self._alt)
 
