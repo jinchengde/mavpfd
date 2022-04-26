@@ -352,8 +352,8 @@ def update_mav(parent_pipe_recv):
                 elif isinstance(obj, EKF_STATUS):
                     vehicle_status.ekf_healthy = obj.healthy
                 elif isinstance(obj, GPS_RAW_INT):
-                    vehicle_status._gps_visible = obj.satellites_visible
-                    vehicle_status._gps_lock_type = obj.fix_type
+                    vehicle_status.gps_visible = obj.satellites_visible
+                    vehicle_status.gps_lock_type = obj.fix_type
 
                 # elif isinstance(obj, CMD_Ack):
                 #     if obj.cmd == MAV_CMD_COMPONENT_ARM_DISARM:

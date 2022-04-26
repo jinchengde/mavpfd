@@ -17,6 +17,7 @@ Item {
     property int speedMode: 0 // 0->OFF, 1->FMC SPD
     property int lnav: 0 // 0->OFF, 1->HDG, 2->NAV, 3->NAV ARM, 4->NAV APR, 5->NAV APR ARM, 6->BC, 7->BC ARM
     property int vnav: 0 // 0->OFF, 1->ALT, 2->IAS, 3->VS, 4->ALT SEL, 5->GS, 6-> GS ARM
+    property string gpsFixed: ''
 
     // Airspeed Bug
     // Text {
@@ -118,10 +119,10 @@ Item {
 
     }
 
-    // LNAV TOP
+    // EKF Status
     Text {
         x: 132
-        y: 10
+        y: 12
         width: 38
         height: 10
         color: ekfstatus === 2 ? "#00ff00" :
@@ -133,13 +134,25 @@ Item {
         font.family: "Courier Std"
         antialiasing: true
         text: "EKF"
-        // text: lnav === 1 ? "HDG SEL" :
-        //                    lnav === 2 ? "VOR/LOC" :
-        //                                 lnav === 3 ? "HDG SEL" :
-        //                                              lnav === 4 ? "APR" :
-        //                                                           lnav === 5 ? "APR" :
-        //                                                                        lnav === 6 ? "BC" :
-        //                                                                                     lnav === 7 ? "BC" : ""
+    }
+
+    // GPS Fixed
+    Text {
+        x: 80
+        y: 12
+        width: 38
+        height: 10
+        color: ekfstatus === 2 ? "#00ff00" :
+                ekfstatus === 1 ? "#FFFF00" :
+                ekfstatus === 0 ? "#FF0000" : ""
+        font.pixelSize: gpsFixed.length < 4 ?  16  :
+                                                            gpsFixed.length === 4 ? 14 :
+                                                                                                  gpsFixed.length > 4 ? 12 : 16
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        font.family: "Courier Std"
+        antialiasing: true
+        text: gpsFixed
     }
 
     // LNAV BOTTOM

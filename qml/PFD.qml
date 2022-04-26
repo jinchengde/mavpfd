@@ -54,6 +54,7 @@ Window {
                     labels.altitudeBug: pfd.target_alt
                     asi.bugValue: pfd.target_aspd
                     labels.ekfstatus : pfd.ekf_healthy
+                    labels.gpsFixed: pfd.gps_lock_type
                 }
             }
         }
