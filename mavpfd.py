@@ -44,7 +44,6 @@ EKF_CONST_POS_MODE = 128
 EKF_PRED_POS_HORIZ_REL = 256
 EKF_PRED_POS_HORIZ_ABS = 512
 EKF_UNINITIALIZED = 1024
-
 class Connection(object):
     '''mavlink connection'''
     def __init__(self, addr):
