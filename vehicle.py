@@ -354,7 +354,7 @@ class Vehicle_Status(QtCore.QObject):
     def gps_lock_type(self, value):
         if self._gps_lock_type == value:
             return
-        self._gps_lock_type = 8
+        self._gps_lock_type = value
 
         self.gps_lock_type_changed.emit(self._gps_lock_type)
 
