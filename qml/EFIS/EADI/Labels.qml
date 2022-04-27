@@ -17,7 +17,7 @@ Item {
     property int speedMode: 0 // 0->OFF, 1->FMC SPD
     property int lnav: 0 // 0->OFF, 1->HDG, 2->NAV, 3->NAV ARM, 4->NAV APR, 5->NAV APR ARM, 6->BC, 7->BC ARM
     property int vnav: 0 // 0->OFF, 1->ALT, 2->IAS, 3->VS, 4->ALT SEL, 5->GS, 6-> GS ARM
-    property string gpsFixed: ''
+    property int gpsFixed: 0
 
     // Airspeed Bug
     // Text {
@@ -125,7 +125,7 @@ Item {
         y: 12
         width: 38
         height: 10
-        color: ekfstatus === 2 ? "#00ff00" :
+        color: ekfstatus === 2 ? "#00FF00" :
                 ekfstatus === 1 ? "#FFFF00" :
                 ekfstatus === 0 ? "#FF0000" : ""
         font.pixelSize: 16
@@ -142,17 +142,37 @@ Item {
         y: 12
         width: 38
         height: 10
-        color: ekfstatus === 2 ? "#00ff00" :
-                ekfstatus === 1 ? "#FFFF00" :
-                ekfstatus === 0 ? "#FF0000" : ""
-        font.pixelSize: gpsFixed.length < 4 ?  16  :
-                                                            gpsFixed.length === 4 ? 14 :
-                                                                                                  gpsFixed.length > 4 ? 12 : 16
+        color: gpsFixed === 0 ? "#FF0000" :
+                gpsFixed === 1 ? "#FF0000" :
+                gpsFixed === 2 ? "#FFFF00" :
+                gpsFixed === 3 ? "#00FF00" :
+                gpsFixed === 4 ? "#00FF00" :
+                gpsFixed === 5 ? "#00FF00" :
+                gpsFixed === 6 ? "#00FF00" :
+                gpsFixed === 7 ? "#00FF00" : 
+                gpsFixed === 8 ? "#00FF00" : "#FF0000"
+        font.pixelSize: gpsFixed === 0 ?  12  :
+                        gpsFixed === 1 ?  12  :
+                        gpsFixed === 2 ?  12  :
+                        gpsFixed === 3 ?  12  :
+                        gpsFixed === 4 ?  16  :
+                        gpsFixed === 5 ?  12  :
+                        gpsFixed === 6 ?  12  :
+                        gpsFixed === 7 ?  14  :
+                        gpsFixed === 8 ?  16  : 16
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         font.family: "Courier Std"
         antialiasing: true
-        text: gpsFixed
+        text: gpsFixed === 0 ? "NO GPS" :
+              gpsFixed === 1 ? "NO FIX" :
+              gpsFixed === 2 ? "2D FIX" :
+              gpsFixed === 3 ? "3D FIX" :
+              gpsFixed === 4 ? "DGPS" :
+              gpsFixed === 5 ? "RTK\nFLOAT" :
+              gpsFixed === 6 ? "RTK\nFIXED" :
+              gpsFixed === 7 ? "STATIC" :
+              gpsFixed === 8 ? "PPP" : "NO GPS"
     }
 
     // LNAV BOTTOM

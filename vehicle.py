@@ -134,7 +134,7 @@ class Vehicle_Status(QtCore.QObject):
     target_alt_visible_changed = QtCore.pyqtSignal(bool)
     ekf_healthy_changed = QtCore.pyqtSignal(int)
     gps_visible_changed = QtCore.pyqtSignal(int)
-    gps_lock_type_changed = QtCore.pyqtSignal(str)
+    gps_lock_type_changed = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
@@ -346,35 +346,17 @@ class Vehicle_Status(QtCore.QObject):
         self._gps_visible = value
         self.gps_visible_changed.emit(self._gps_visible)
 
-    @QtCore.pyqtProperty(str, notify=gps_lock_type_changed)
+    @QtCore.pyqtProperty(int, notify=gps_lock_type_changed)
     def gps_lock_type(self):
-        return self._gps_lock_type_str
+        return self._gps_lock_type
 
     @gps_lock_type.setter
     def gps_lock_type(self, value):
         if self._gps_lock_type == value:
             return
-        self._gps_lock_type = 1
-        if self._gps_lock_type == GPS_RAW_INT.GPS_FIX_TYPE_NO_GPS:
-            self._gps_lock_type_str = 'NO GPS'
-        elif self._gps_lock_type == GPS_RAW_INT.GPS_FIX_TYPE_NO_FIX:
-            self._gps_lock_type_str = 'NO FIX'
-        elif self._gps_lock_type == GPS_RAW_INT.GPS_FIX_TYPE_2D_FIX:
-            self._gps_lock_type_str = '2D FIX'
-        elif self._gps_lock_type == GPS_RAW_INT.GPS_FIX_TYPE_3D_FIX:
-            self._gps_lock_type_str = '3D FIX'
-        elif self._gps_lock_type == GPS_RAW_INT.GPS_FIX_TYPE_DGPS:
-            self._gps_lock_type_str = 'DGPS'
-        elif self._gps_lock_type == GPS_RAW_INT.GPS_FIX_TYPE_PPP:
-            self._gps_lock_type_str = 'PPP'
-        elif self._gps_lock_type == GPS_RAW_INT.GPS_FIX_TYPE_RTK_FIXED:
-            self._gps_lock_type_str = 'RTK\n FIXED'
-        elif self._gps_lock_type == GPS_RAW_INT.GPS_FIX_TYPE_RTK_FLOAT:
-            self._gps_lock_type_str = 'RTK\n FLOAT'
-        elif self._gps_lock_type == GPS_RAW_INT.GPS_FIX_TYPE_STATIC:
-            self._gps_lock_type_str = 'STATIC'
+        self._gps_lock_type = 8
 
-        self.gps_lock_type_changed.emit(self._gps_lock_type_str)
+        self.gps_lock_type_changed.emit(self._gps_lock_type)
 
     
     
