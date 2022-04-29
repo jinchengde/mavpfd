@@ -55,6 +55,10 @@ Window {
                     asi.bugValue: pfd.target_aspd
                     labels.ekfstatus : pfd.ekf_healthy
                     labels.gpsFixed: pfd.gps_lock_type
+                    adi.dotH: pfd.xtrack_error
+                    adi.dotV: pfd.alt_error
+                    adi.dotHVisible: pfd.ils_visible
+                    adi.dotVVisible: pfd.ils_visible
                 }
             }
         }

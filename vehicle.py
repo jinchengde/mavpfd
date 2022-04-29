@@ -36,6 +36,7 @@ class NAV_Controller_Output():
         self.nav_yaw = controller_output.target_bearing
         self.alt_error = controller_output.alt_error
         self.aspd_error = controller_output.aspd_error
+        self.xtrack_error = controller_output.xtrack_error
         
 class Global_Position_INT():
     '''Altitude relative to ground (GPS).'''
@@ -52,11 +53,22 @@ class BatteryInfo():
 
 class MISSION_CURRENT():
     '''mission status'''
-    def __init__(self, seq, x, y, z):
+    MAV_CMD_NAV_WAYPOINT = 16
+    MAV_CMD_NAV_LOITER_UNLIM = 17
+    MAV_CMD_NAV_LOITER_TURNS = 18
+    MAV_CMD_NAV_LOITER_TIME = 19
+    MAV_CMD_NAV_RETURN_TO_LAUNCH = 20
+    MAV_CMD_NAV_LAND = 21
+    MAV_CMD_NAV_TAKEOFF = 22
+    MAV_CMD_NAV_LAND_LOCAL = 23
+    MAV_CMD_NAV_TAKEOFF_LOCAL =  24
+    MAV_CMD_NAV_FOLLOW = 25
+    def __init__(self, seq, x, y, z, cmd):
         self.seq = seq
         self.x = x
         self.y = y
         self.z = z
+        self.cmd = cmd
         
 class FlightState():
     '''Mode and arm state.'''
@@ -135,6 +147,10 @@ class Vehicle_Status(QtCore.QObject):
     ekf_healthy_changed = QtCore.pyqtSignal(int)
     gps_visible_changed = QtCore.pyqtSignal(int)
     gps_lock_type_changed = QtCore.pyqtSignal(int)
+    ils_visible_changed = QtCore.pyqtSignal(bool)
+    xtrack_error_changed = QtCore.pyqtSignal(int)
+    alt_error_changed = QtCore.pyqtSignal(int)
+    mission_cmd_changed = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
@@ -158,6 +174,10 @@ class Vehicle_Status(QtCore.QObject):
         self._gps_visible = 0
         self._gps_lock_type = 0
         self._gps_lock_type_str = ''
+        self._ils_visible = False
+        self._alt_error = 0
+        self._xtrack_error = 0
+        self._mission_cmd = 0
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):
@@ -311,7 +331,6 @@ class Vehicle_Status(QtCore.QObject):
         if self._target_component == value:
             return
         self._target_component = value
-
     
     @QtCore.pyqtProperty(float, notify=target_alt_visible_changed)
     def target_alt_visible(self):
@@ -355,8 +374,45 @@ class Vehicle_Status(QtCore.QObject):
         if self._gps_lock_type == value:
             return
         self._gps_lock_type = value
-
         self.gps_lock_type_changed.emit(self._gps_lock_type)
+
+    @QtCore.pyqtProperty(bool, notify=ils_visible_changed)
+    def ils_visible(self):
+        return self._ils_visible
+
+    @ils_visible.setter
+    def ils_visible(self, value): 
+        self._ils_visible = value       
+        self.ils_visible_changed.emit(self._ils_visible)
+
+    @QtCore.pyqtProperty(int, notify=xtrack_error_changed)
+    def xtrack_error(self):
+        return self._xtrack_error
+
+    @xtrack_error.setter
+    def xtrack_error(self, value):
+        if self._ils_visible == True: 
+            self._xtrack_error = value       
+            self.xtrack_error_changed.emit(self._xtrack_error)
+
+    @QtCore.pyqtProperty(int, notify=alt_error_changed)
+    def alt_error(self):
+        return self._alt_error
+
+    @alt_error.setter
+    def alt_error(self, value):
+        if self._ils_visible == True: 
+            self._alt_error = value       
+            self.alt_error_changed.emit(self._alt_error)
+
+    @QtCore.pyqtProperty(int, notify=mission_cmd_changed)
+    def mission_cmd(self):
+        return self._mission_cmd
+
+    @mission_cmd.setter
+    def mission_cmd(self, value):
+        self._mission_cmd = value       
+        self.mission_cmd_changed.emit(self._mission_cmd)
 
     
     

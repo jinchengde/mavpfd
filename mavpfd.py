@@ -157,7 +157,7 @@ class Link(object):
         ret = []
         tnow = time.time()
         next_seq = self._wp_count
-        for i in range(5):
+        for i in range(self._expected_count):
             seq = next_seq+i
             if seq+1 > self._expected_count:
                 continue
@@ -267,9 +267,11 @@ class Link(object):
                         self._get_mission_item = True
                     self._wp_received[m.seq] = m     
                 elif m._type == 'MISSION_CURRENT':
-                    self._current_seq = m.seq
+                    if m.seq == self._current_seq:
+                        continue
                     if len(self._wp_received) != 0:
-                        conn._msglist.append(MISSION_CURRENT(m.seq, self._wp_received[m.seq].x, self._wp_received[m.seq].y, self._wp_received[m.seq].z))
+                        self._current_seq = m.seq
+                        conn._msglist.append(MISSION_CURRENT(m.seq, self._wp_received[m.seq].x, self._wp_received[m.seq].y, self._wp_received[m.seq].z, self._wp_received[m.seq].command))
                 elif m._type == 'EKF_STATUS_REPORT':
                     ekfhealthy = 0
                     ekfatitude = m.flags & 0x01 & EKF_ATTITUDE
@@ -336,10 +338,17 @@ def update_mav(parent_pipe_recv):
                     vehicle_status.nav_pitch = obj.nav_pitch
                     vehicle_status.nav_roll = obj.nav_roll
                     vehicle_status.nav_yaw = obj.nav_yaw
+                    vehicle_status.target_aspd = obj.aspd_error
+                    vehicle_status.xtrack_error = obj.xtrack_error
+                    vehicle_status.alt_error = obj.alt_error
                     if vehicle_status.flightmode != 'AUTO':
                         vehicle_status.target_alt = obj.alt_error
                         vehicle_status.target_alt_visible = False
-                    vehicle_status.target_aspd = obj.aspd_error
+                    else:
+                        if vehicle_status.mission_cmd == MISSION_CURRENT.MAV_CMD_NAV_LAND:
+                            vehicle_status.ils_visible = True
+                        else:
+                            vehicle_status.ils_visible = False                        
                 elif isinstance(obj, FlightState):
                     vehicle_status.flightmode = obj.mode
                     vehicle_status.arm_disarm = obj.arm_disarm
@@ -349,6 +358,7 @@ def update_mav(parent_pipe_recv):
                     if vehicle_status.flightmode == 'AUTO':
                         vehicle_status.target_alt = obj.z
                         vehicle_status.target_alt_visible = True
+                        vehicle_status.mission_cmd = obj.cmd
                 elif isinstance(obj, EKF_STATUS):
                     vehicle_status.ekf_healthy = obj.healthy
                 elif isinstance(obj, GPS_RAW_INT):

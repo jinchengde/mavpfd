@@ -163,7 +163,7 @@ Item {
         sourceSize.width: 40
         visible: dotHVisible
         transform: Translate {
-            x: 50 * dotH
+            x: 2 * dotH
         }
     }
 
@@ -177,7 +177,7 @@ Item {
         sourceSize.width: 40
         visible: dotVVisible
         transform: Translate {
-            y: -50 * dotV
+            y: -2 * dotV
         }
     }
 
