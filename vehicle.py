@@ -309,7 +309,7 @@ class Vehicle_Status(QtCore.QObject):
 
     @target_aspd.setter
     def target_aspd(self, value):
-        self._target_aspd = self._airspeed + value
+        self._target_aspd = self._airspeed + (value / 100)
         self.target_aspd_changed.emit(self._target_aspd)
 
     @QtCore.pyqtProperty(int)
