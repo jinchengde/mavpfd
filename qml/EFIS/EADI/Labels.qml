@@ -18,6 +18,7 @@ Item {
     property int lnav: 0 // 0->OFF, 1->HDG, 2->NAV, 3->NAV ARM, 4->NAV APR, 5->NAV APR ARM, 6->BC, 7->BC ARM
     property int vnav: 0 // 0->OFF, 1->ALT, 2->IAS, 3->VS, 4->ALT SEL, 5->GS, 6-> GS ARM
     property int gpsFixed: 0
+    property int vibrationLevel: 0
 
     Text {
         id: altitudeBugText
@@ -85,7 +86,7 @@ Item {
     // EKF Status
     Text {
         x: 132
-        y: 12
+        y: 10
         width: 38
         height: 10
         color: ekfstatus === 2 ? "#00FF00" :
@@ -97,6 +98,23 @@ Item {
         font.family: "Courier Std"
         antialiasing: true
         text: "EKF"
+    }
+
+    // Vibration Status
+    Text {
+        x: 182
+        y: 10
+        width: 38
+        height: 10
+        color: vibrationLevel === 0 ? "#00FF00" :
+                vibrationLevel === 1 ? "#FFFF00" :
+                vibrationLevel === 2 ? "#FF0000" : ""
+        font.pixelSize: 16
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        font.family: "Courier Std"
+        antialiasing: true
+        text: "VIBE"
     }
 
     // GPS Fixed

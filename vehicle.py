@@ -78,6 +78,16 @@ class FlightState():
         self.target_system = target_system
         self.target_component = target_component
         
+class VIBRATION():
+    '''Vibration x, y, z'''
+    def __init__(self, vibration):
+        self.x = vibration.vibration_x
+        self.y = vibration.vibration_y
+        self.z = vibration.vibration_z
+        self.clip0 = vibration.clipping_0
+        self.clip1 = vibration.clipping_1
+        self.clip2 = vibration.clipping_2
+
 class WaypointInfo():
     '''Current and final waypoint numbers, and the distance
     to the current waypoint.'''
@@ -151,6 +161,7 @@ class Vehicle_Status(QtCore.QObject):
     xtrack_error_changed = QtCore.pyqtSignal(int)
     alt_error_changed = QtCore.pyqtSignal(int)
     mission_cmd_changed = QtCore.pyqtSignal(int)
+    vibration_level_changed = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
@@ -178,6 +189,7 @@ class Vehicle_Status(QtCore.QObject):
         self._alt_error = 0
         self._xtrack_error = 0
         self._mission_cmd = 0
+        self._vibration_level = 0
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):
@@ -413,6 +425,17 @@ class Vehicle_Status(QtCore.QObject):
     def mission_cmd(self, value):
         self._mission_cmd = value       
         self.mission_cmd_changed.emit(self._mission_cmd)
+
+    @QtCore.pyqtProperty(int, notify=vibration_level_changed)
+    def vibration_level(self):
+        return self._vibration_level
+
+    @vibration_level.setter
+    def vibration_level(self, value):
+        if self._vibration_level == value:
+            return
+        self._vibration_level = value       
+        self.vibration_level_changed.emit(self._vibration_level)
 
     
     

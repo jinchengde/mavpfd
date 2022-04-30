@@ -27,7 +27,7 @@ import math
 
 from multiprocessing import Process, freeze_support, Pipe, Semaphore, Event, Lock, Queue
 
-from vehicle import EKF_STATUS, GPS_RAW_INT, Attitude, VFR_HUD, Global_Position_INT, NAV_Controller_Output, CMD_Ack, MISSION_CURRENT, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
+from vehicle import EKF_STATUS, VIBRATION, GPS_RAW_INT, Attitude, VFR_HUD, Global_Position_INT, NAV_Controller_Output, CMD_Ack, MISSION_CURRENT, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
 
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtCore import QUrl, QTimer
@@ -292,7 +292,8 @@ class Link(object):
                     if now - conn._last_gps_raw_int > 0.1:
                         conn._last_gps_raw_int = now
                         conn._msglist.append(GPS_RAW_INT(m))
-
+                elif m._type == 'VIBRATION':
+                    conn._msglist.append(VIBRATION(m))
                 continue
 
         if not packet_received:
@@ -364,6 +365,13 @@ def update_mav(parent_pipe_recv):
                 elif isinstance(obj, GPS_RAW_INT):
                     vehicle_status.gps_visible = obj.satellites_visible
                     vehicle_status.gps_lock_type = obj.fix_type
+                elif isinstance(obj, VIBRATION):
+                    if obj.x > 0.6 or obj.y > 0.6 or obj.z > 0.6:
+                        vehicle_status.vibration_level = 2
+                    elif obj.x > 0.3 or obj.y > 0.3 or obj.z > 0.3:
+                        vehicle_status.vibration_level = 1
+                    else:
+                        vehicle_status.vibration_level = 0
 
                 # elif isinstance(obj, CMD_Ack):
                 #     if obj.cmd == MAV_CMD_COMPONENT_ARM_DISARM:

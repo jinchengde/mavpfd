@@ -59,6 +59,7 @@ Window {
                     adi.dotV: pfd.alt_error
                     adi.dotHVisible: pfd.ils_visible
                     adi.dotVVisible: pfd.ils_visible
+                    labels.vibrationLevel: pfd.vibration_level
                 }
             }
         }
