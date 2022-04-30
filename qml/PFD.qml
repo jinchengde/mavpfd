@@ -16,7 +16,7 @@ Window {
 
     Item {
         id: container
-        // property double scaleRatio: 3.05 * Math.min(height / 1080, width / 1920)
+        property double scaleRatio: Math.min(height / 310, width / 310)
 
         anchors {
             fill: parent
@@ -26,40 +26,43 @@ Window {
         Row {
             anchors.centerIn: parent
             // spacing: 8
-            // scale: container.scaleRatio
+            scale: container.scaleRatio
 
             Rectangle {
-                // width: 310
-                // height: 310
                 radius: 6
                 color: "#000000"
 
                 ElectronicAttitudeDirectionIndicator {
                     anchors.centerIn: parent
-                    // scaleRatio: container.scaleRatio
+                    scaleRatio: container.scaleRatio
 
                     adi.roll: pfd.roll
                     adi.fdRoll: pfd.nav_roll
                     adi.pitch: pfd.pitch
                     adi.fdPitch: pfd.nav_pitch
-                    hsi.heading: pfd.yaw
-                    hsi.bugValue: pfd.nav_yaw
-                    asi.airspeed: pfd.airspeed
-                    alt.altitude: pfd.alt
-                    vsi.climbRate: pfd.climbrate
-                    labels.flightMode: pfd.flightmode
-                    labels.armstatus: pfd.arm_disarm
-                    alt.bugValue: pfd.target_alt
-                    labels.altitudeBugVisible: pfd.target_alt_visible
-                    labels.altitudeBug: pfd.target_alt
-                    asi.bugValue: pfd.target_aspd
-                    labels.ekfstatus : pfd.ekf_healthy
-                    labels.gpsFixed: pfd.gps_lock_type
                     adi.dotH: pfd.xtrack_error
                     adi.dotV: pfd.alt_error
                     adi.dotHVisible: pfd.ils_visible
                     adi.dotVVisible: pfd.ils_visible
+
+                    hsi.heading: pfd.yaw
+                    hsi.bugValue: pfd.nav_yaw
+
+                    asi.airspeed: pfd.airspeed
+                    asi.bugValue: pfd.target_aspd
+
+                    vsi.climbRate: pfd.climbrate
+                    
+                    alt.bugValue: pfd.target_alt
+                    alt.altitude: pfd.alt                    
+                    
+                    labels.ekfstatus : pfd.ekf_healthy
+                    labels.gpsFixed: pfd.gps_lock_type
                     labels.vibrationLevel: pfd.vibration_level
+                    labels.flightMode: pfd.flightmode
+                    labels.armstatus: pfd.arm_disarm
+                    labels.altitudeBugVisible: pfd.target_alt_visible
+                    labels.altitudeBug: pfd.target_alt
                 }
             }
         }
