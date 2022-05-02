@@ -1,4 +1,5 @@
 import "EFIS/EADI"
+import "EFIS/EHSI"
 
 import QtQuick 2.15
 import QtQuick.Window 2.15
@@ -8,33 +9,40 @@ import QtQuick.Controls 2.15
 Window {
     id: window
     visible: true
-    minimumWidth: 310
-    minimumHeight: 310
+    minimumWidth: 630
+    minimumHeight: 320
     //visibility: Window.Maximized
     title: "Primary Flight Display"
     color: "#ffffff"
 
     Item {
         id: container
-        property double scaleRatio: Math.min(height / 310, width / 310)
+        property double scaleRatio: Math.min(height / 320, width / 630)
 
         anchors {
             fill: parent
-            // margins: 16
+            // margins: 4
         }
 
         Row {
             anchors.centerIn: parent
-            // spacing: 8
+            spacing: 4
             scale: container.scaleRatio
+            // layoutDirection: "RightToLeft"
 
             Rectangle {
                 radius: 6
                 color: "#000000"
+                id: eadi
+                width: 310
+                height: 310
+                // anchors.left: parent.left
+                // anchors.top: parent.top
+                // visible: false
 
                 ElectronicAttitudeDirectionIndicator {
                     anchors.centerIn: parent
-                    scaleRatio: container.scaleRatio
+                    scaleRatio: container.scaleRatio                    
 
                     adi.roll: pfd.roll
                     adi.fdRoll: pfd.nav_roll
@@ -65,6 +73,28 @@ Window {
                     labels.altitudeBug: pfd.target_alt
                 }
             }
+
+            Rectangle {
+                width: 310
+                height: 310
+                radius: 6
+                color: "#000000"
+                visible: true
+                id: ehsi
+
+                ElectronicHorizontalSituationIndicator {
+                    anchors.centerIn: parent
+
+                    heading: pfd.yaw
+                    // course: pfd.course
+                    // bearing: pfd.bearing
+                    // deviation: pfd.vorDeviation
+                    headingBug: pfd.nav_yaw
+                    // distance: pfd.dmeDistance
+                    // cdiMode: pfd.courseDeviationIndicatorMode
+                }
+            }
+        
         }
     }
 }

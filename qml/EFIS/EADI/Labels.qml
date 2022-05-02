@@ -86,7 +86,7 @@ Item {
     // EKF Status
     Text {
         x: 132
-        y: 10
+        y: 12
         width: 38
         height: 10
         color: ekfstatus === 2 ? "#00FF00" :
@@ -103,7 +103,7 @@ Item {
     // Vibration Status
     Text {
         x: 182
-        y: 10
+        y: 12
         width: 38
         height: 10
         color: vibrationLevel === 0 ? "#00FF00" :
