@@ -8,6 +8,7 @@ Item {
     property double headingBug: 0
     property double course: 0
     property double distance: 0
+    property bool distanceVisible: false
 
     property string headingString: headingBug.toFixed(0)
     property string courseString: course.toFixed(0)
@@ -50,6 +51,7 @@ Item {
         verticalAlignment: Text.AlignVCenter
         color: "#ffffff"
         antialiasing: true
-        text: distance.toFixed(1) + " NM"
+        text: distance.toFixed(1) + " M"
+        visible: distanceVisible
     }
 }

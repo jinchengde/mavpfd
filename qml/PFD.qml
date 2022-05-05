@@ -90,7 +90,8 @@ Window {
                     // bearing: pfd.bearing
                     // deviation: pfd.vorDeviation
                     headingBug: pfd.nav_yaw
-                    // distance: pfd.dmeDistance
+                    distance: pfd.wp_dist
+                    labels.distanceVisible: pfd.target_alt_visible
                     // cdiMode: pfd.courseDeviationIndicatorMode
                 }
             }

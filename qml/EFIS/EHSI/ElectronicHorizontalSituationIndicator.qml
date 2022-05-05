@@ -12,7 +12,10 @@ Item {
     property double deviation: 0
     property double distance: 0
     property double headingBug: 0
+    property bool distanceVisible: false
     property int cdiMode: 0 // 0->OFF, 1->TO, 2->FROM
+
+    property alias labels: labels
 
     readonly property double pixelPerDeviation: 52.5
 
@@ -128,6 +131,6 @@ Item {
        headingBug: root.headingBug
        course: root.course
        distance: root.distance
-
+       distanceVisible: root.distanceVisible
     }
 }

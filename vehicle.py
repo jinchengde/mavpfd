@@ -37,6 +37,7 @@ class NAV_Controller_Output():
         self.alt_error = controller_output.alt_error
         self.aspd_error = controller_output.aspd_error
         self.xtrack_error = controller_output.xtrack_error
+        self.wp_dist = controller_output.wp_dist
         
 class Global_Position_INT():
     '''Altitude relative to ground (GPS).'''
@@ -162,6 +163,7 @@ class Vehicle_Status(QtCore.QObject):
     alt_error_changed = QtCore.pyqtSignal(int)
     mission_cmd_changed = QtCore.pyqtSignal(int)
     vibration_level_changed = QtCore.pyqtSignal(int)
+    wp_dist_changed = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
@@ -190,6 +192,7 @@ class Vehicle_Status(QtCore.QObject):
         self._xtrack_error = 0
         self._mission_cmd = 0
         self._vibration_level = 0
+        self._wp_dist = 0
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):
@@ -437,5 +440,15 @@ class Vehicle_Status(QtCore.QObject):
         self._vibration_level = value       
         self.vibration_level_changed.emit(self._vibration_level)
 
+    @QtCore.pyqtProperty(int, notify=wp_dist_changed)
+    def wp_dist(self):
+        return self._wp_dist
+
+    @wp_dist.setter
+    def wp_dist(self, value):
+        if self._wp_dist == value:
+            return
+        self._wp_dist = value       
+        self.wp_dist_changed.emit(self._wp_dist)
     
     
