@@ -267,8 +267,8 @@ class Link(object):
                         self._get_mission_item = True
                     self._wp_received[m.seq] = m     
                 elif m._type == 'MISSION_CURRENT':
-                    if m.seq == self._current_seq:
-                        continue
+                    # if m.seq == self._current_seq:
+                    #     continue
                     if len(self._wp_received) != 0:
                         self._current_seq = m.seq
                         conn._msglist.append(MISSION_CURRENT(m.seq, self._wp_received[m.seq].x, self._wp_received[m.seq].y, self._wp_received[m.seq].z, self._wp_received[m.seq].command))
@@ -341,11 +341,11 @@ def update_mav(parent_pipe_recv):
                     vehicle_status.nav_yaw = obj.nav_yaw
                     vehicle_status.target_aspd = obj.aspd_error
                     vehicle_status.xtrack_error = obj.xtrack_error
-                    vehicle_status.alt_error = obj.alt_error
-                    if vehicle_status.flightmode != 'AUTO':
-                        vehicle_status.target_alt = obj.alt_error
-                        vehicle_status.target_alt_visible = False                        
-                    else:
+                    vehicle_status.alt_error = obj.alt_error                    
+                    if vehicle_status.flightmode != 'AUTO':                        
+                        vehicle_status.target_alt_visible = False  
+                        vehicle_status.target_alt = obj.alt_error                      
+                    else: 
                         if vehicle_status.mission_cmd == MISSION_CURRENT.MAV_CMD_NAV_LAND:
                             vehicle_status.ils_visible = True
                             vehicle_status.wp_dist = obj.wp_dist

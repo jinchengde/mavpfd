@@ -51,7 +51,8 @@ Item {
         verticalAlignment: Text.AlignVCenter
         color: "#ffffff"
         antialiasing: true
-        text: distance.toFixed(1) + " M"
+        text: distance.toFixed(0).length > 3 ? (distance / 1000).toFixed(3) + " KM":
+                distance.toFixed(0) + " M"
         visible: distanceVisible
     }
 }
