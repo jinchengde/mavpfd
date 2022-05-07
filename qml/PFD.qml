@@ -91,7 +91,7 @@ Window {
                     // deviation: pfd.vorDeviation
                     headingBug: pfd.nav_yaw
                     distance: pfd.wp_dist
-                    labels.distanceVisible: pfd.target_alt_visible
+                    // labels.distanceVisible: pfd.target_alt_visible
                     // cdiMode: pfd.courseDeviationIndicatorMode
                 }
             }
