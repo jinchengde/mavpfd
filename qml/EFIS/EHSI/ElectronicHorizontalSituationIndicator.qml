@@ -52,12 +52,12 @@ Item {
         }
     }
 
-    // CustomImage {
-    //     id: back
-    //     source: "../../Resources/ehsi/ehsi_back.svg"
-    //     width: 300
-    //     height: 300
-    // }
+    CustomImage {
+        id: back
+        source: "../../Resources/ehsi/ehsi_back.svg"
+        width: 300
+        height: 300
+    }
 
     // // CustomImage {
     // //     id: devScale
