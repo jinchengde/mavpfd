@@ -15,7 +15,7 @@ Item {
     property bool distanceVisible: false
     property int cdiMode: 0 // 0->OFF, 1->TO, 2->FROM
 
-    // property alias labels: labels
+    property alias labels: labels
 
     readonly property double pixelPerDeviation: 52.5
 
