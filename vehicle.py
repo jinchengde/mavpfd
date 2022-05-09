@@ -168,6 +168,20 @@ class Vehicle_Status(QtCore.QObject):
     vibration_level_changed = QtCore.pyqtSignal(int)
     wp_dist_changed = QtCore.pyqtSignal(int)
 
+    EARTH_REDIUS = 6378.137
+
+    def rad(self, d):
+        return d * math.pi / 180.0
+
+    def getDistance(self, lat1, lng1, lat2, lng2):
+        radLat1 = self.rad(lat1)
+        radLat2 = self.rad(lat2)
+        a = radLat1 - radLat2
+        b = self.rad(lng1) - self.rad(lng2)
+        s = 2 * math.asin(math.sqrt(math.pow(math.sin(a/2), 2) + math.cos(radLat1) * math.cos(radLat2) * math.pow(math.sin(b/2), 2)))
+        s = s * self.EARTH_REDIUS
+        return s
+
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
         self._pitch = 0.0
