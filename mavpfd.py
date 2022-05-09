@@ -335,6 +335,8 @@ def update_mav(parent_pipe_recv):
                     vehicle_status.climbrate = obj.climbRate
                 elif isinstance(obj, Global_Position_INT):
                     vehicle_status.alt = obj.relAlt
+                    vehicle_status.lat = obj.lat
+                    vehicle_status.lon = obj.lon
                 elif isinstance(obj, NAV_Controller_Output):
                     vehicle_status.nav_pitch = obj.nav_pitch
                     vehicle_status.nav_roll = obj.nav_roll

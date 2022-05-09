@@ -43,6 +43,9 @@ class Global_Position_INT():
     '''Altitude relative to ground (GPS).'''
     def __init__(self,gpsINT):
         self.relAlt = gpsINT.relative_alt/1000.0
+        self.lat = gpsINT.lat
+        self.lon = gpsINT.lon
+        self.alt = gpsINT.alt
         # self.curTime = curTime
         
 class BatteryInfo():
@@ -193,6 +196,8 @@ class Vehicle_Status(QtCore.QObject):
         self._mission_cmd = 0
         self._vibration_level = 0
         self._wp_dist = 0
+        self._lat = 0
+        self._lon = 0
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):
@@ -450,5 +455,20 @@ class Vehicle_Status(QtCore.QObject):
             return
         self._wp_dist = value       
         self.wp_dist_changed.emit(self._wp_dist)
-    
+
+    @QtCore.pyqtProperty(int)
+    def lat(self):
+        return self._lat
+
+    @lat.setter
+    def lat(self, value):
+        self._lat = value       
+
+    @QtCore.pyqtProperty(int)
+    def lon(self):
+        return self._lon
+
+    @lon.setter
+    def lon(self, value):
+        self._lon = value    
     
