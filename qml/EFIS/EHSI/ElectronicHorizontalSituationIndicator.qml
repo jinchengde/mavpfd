@@ -52,12 +52,12 @@ Item {
         }
     }
 
-    // CustomImage {
-    //     id: back
-    //     source: "../../Resources/ehsi/ehsi_back.svg"
-    //     width: 300
-    //     height: 300
-    // }
+    CustomImage {
+        id: back
+        source: "../../Resources/ehsi/ehsi_back.svg"
+        width: 300
+        height: 300
+    }
 
     // // CustomImage {
     // //     id: devScale
@@ -136,9 +136,9 @@ Item {
         rotation: -heading
         width: 300
         height: 300
-        fillMode: Image.PreserveAspectCrop
-        clip: true
-        anchors.centerIn: parent
+        // fillMode: Image.PreserveAspectCrop
+        // clip: true
+        // anchors.centerIn: parent
     }
 
     CustomImage {
