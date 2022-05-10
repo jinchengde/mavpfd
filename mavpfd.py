@@ -265,7 +265,8 @@ class Link(object):
                     if m.seq + 1 == self._expected_count:
                         self.send_mission_ack(conn)
                         self._get_mission_item = True
-                    self._wp_received[m.seq] = m     
+                    self._wp_received[m.seq] = m    
+                    conn._msglist.append(WaypointInfo(m)) 
                 elif m._type == 'MISSION_CURRENT':
                     # if m.seq == self._current_seq:
                     #     continue
@@ -376,6 +377,8 @@ def update_mav(parent_pipe_recv):
                         vehicle_status.vibration_level = 1
                     else:
                         vehicle_status.vibration_level = 0
+                elif isinstance(obj, WaypointInfo):
+                    vehicle_status._wp_received[obj.seq] = obj
 
                 # elif isinstance(obj, CMD_Ack):
                 #     if obj.cmd == MAV_CMD_COMPONENT_ARM_DISARM:

@@ -95,12 +95,12 @@ class VIBRATION():
 class WaypointInfo():
     '''Current and final waypoint numbers, and the distance
     to the current waypoint.'''
-    def __init__(self,current,final,currentDist,nextWPTime,wpBearing):
-        self.current = current
-        self.final = final
-        self.currentDist = currentDist
-        self.nextWPTime = nextWPTime
-        self.wpBearing = wpBearing
+    def __init__(self,waypoint):
+        self.seq = waypoint.seq
+        self.lat = waypoint.x
+        self.lon = waypoint.y
+        self.alt = waypoint.z
+        self.cmd = waypoint.command
         
 class FPS():
     '''Stores intended frame rate information.'''
@@ -167,6 +167,8 @@ class Vehicle_Status(QtCore.QObject):
     mission_cmd_changed = QtCore.pyqtSignal(int)
     vibration_level_changed = QtCore.pyqtSignal(int)
     wp_dist_changed = QtCore.pyqtSignal(int)
+    lat_changed = QtCore.pyqtSignal(int)
+    lon_changed = QtCore.pyqtSignal(int)
 
     EARTH_REDIUS = 6378.137
 
@@ -212,6 +214,7 @@ class Vehicle_Status(QtCore.QObject):
         self._wp_dist = 0
         self._lat = 0
         self._lon = 0
+        self._wp_received = {}
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):
@@ -470,19 +473,25 @@ class Vehicle_Status(QtCore.QObject):
         self._wp_dist = value       
         self.wp_dist_changed.emit(self._wp_dist)
 
-    @QtCore.pyqtProperty(int)
+    @QtCore.pyqtProperty(int, notify=lat_changed)
     def lat(self):
         return self._lat
 
     @lat.setter
     def lat(self, value):
+        if self._lat == value:
+            return
         self._lat = value       
+        self.lat_changed.emit(self._lat)
 
-    @QtCore.pyqtProperty(int)
+    @QtCore.pyqtProperty(int, notify=lon_changed)
     def lon(self):
         return self._lon
 
     @lon.setter
     def lon(self, value):
-        self._lon = value    
+        if self._lon == value:
+            return
+        self._lon = value 
+        self.lon_changed.emit(self._lon)   
     
