@@ -382,7 +382,7 @@ def update_mav(parent_pipe_recv):
                 elif isinstance(obj, WaypointInfo):
                     vehicle_status._wp_received[obj.seq] = obj
                 elif isinstance(obj, Status_Notify):
-                    
+                    vehicle_status.wp_received_flag = True
 
                 # elif isinstance(obj, CMD_Ack):
                 #     if obj.cmd == MAV_CMD_COMPONENT_ARM_DISARM:
