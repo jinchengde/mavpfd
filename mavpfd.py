@@ -27,7 +27,7 @@ import math
 
 from multiprocessing import Process, freeze_support, Pipe, Semaphore, Event, Lock, Queue
 
-from vehicle import EKF_STATUS, VIBRATION, GPS_RAW_INT, Attitude, VFR_HUD, Global_Position_INT, NAV_Controller_Output, CMD_Ack, MISSION_CURRENT, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
+from vehicle import Status_Notify, EKF_STATUS, VIBRATION, GPS_RAW_INT, Attitude, VFR_HUD, Global_Position_INT, NAV_Controller_Output, CMD_Ack, MISSION_CURRENT, BatteryInfo, FlightState, WaypointInfo, FPS, Vehicle_Status
 
 from PyQt5.QtGui import QGuiApplication
 from PyQt5.QtCore import QUrl, QTimer
@@ -267,6 +267,8 @@ class Link(object):
                         self._get_mission_item = True
                     self._wp_received[m.seq] = m    
                     conn._msglist.append(WaypointInfo(m)) 
+                    if self._get_mission_item == True:
+                        conn._msglist.append(Status_Notify(Status_Notify.WAYPOINT_RECEIVED))
                 elif m._type == 'MISSION_CURRENT':
                     # if m.seq == self._current_seq:
                     #     continue
@@ -379,6 +381,8 @@ def update_mav(parent_pipe_recv):
                         vehicle_status.vibration_level = 0
                 elif isinstance(obj, WaypointInfo):
                     vehicle_status._wp_received[obj.seq] = obj
+                elif isinstance(obj, Status_Notify):
+                    
 
                 # elif isinstance(obj, CMD_Ack):
                 #     if obj.cmd == MAV_CMD_COMPONENT_ARM_DISARM:

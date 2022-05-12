@@ -101,7 +101,11 @@ class WaypointInfo():
         self.lon = waypoint.y
         self.alt = waypoint.z
         self.cmd = waypoint.command
-        
+
+class Status_Notify():
+    WAYPOINT_RECEIVED = 1
+    def __init__(self, notify):
+        self.notify = notify
 class FPS():
     '''Stores intended frame rate information.'''
     def __init__(self,fps):
@@ -169,6 +173,7 @@ class Vehicle_Status(QtCore.QObject):
     wp_dist_changed = QtCore.pyqtSignal(int)
     lat_changed = QtCore.pyqtSignal(int)
     lon_changed = QtCore.pyqtSignal(int)
+    waypoint_received_changed = QtCore.pyqtSignal(bool)
 
     EARTH_REDIUS = 6378.137
 
@@ -215,6 +220,7 @@ class Vehicle_Status(QtCore.QObject):
         self._lat = 0
         self._lon = 0
         self._wp_received = {}
+        self._wp_received_flag = False
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
     def pitch(self):
@@ -494,4 +500,15 @@ class Vehicle_Status(QtCore.QObject):
             return
         self._lon = value 
         self.lon_changed.emit(self._lon)   
+
+    @QtCore.pyqtProperty(bool, notify=waypoint_received_changed)
+    def wp_received_flag(self):
+        return self._wp_received_flag
+
+    @wp_received_flag.setter
+    def wp_received_flag(self, value):
+        if self._wp_received_flag == value:
+            return
+        self._wp_received_flag = value
+        self.waypoint_received_changed.emit(self._wp_received_flag)
     
