@@ -42,10 +42,10 @@ class NAV_Controller_Output():
 class Global_Position_INT():
     '''Altitude relative to ground (GPS).'''
     def __init__(self,gpsINT):
-        self.relAlt = gpsINT.relative_alt/1000.0
-        self.lat = gpsINT.lat
-        self.lon = gpsINT.lon
-        self.alt = gpsINT.alt
+        self.relAlt = gpsINT.relative_alt/1000
+        self.lat = gpsINT.lat/10e6
+        self.lon = gpsINT.lon/10e6 
+        self.alt = gpsINT.alt/1000
         # self.curTime = curTime
         
 class BatteryInfo():
@@ -143,6 +143,7 @@ class GPS_RAW_INT():
         
 from multiprocessing.sharedctypes import Value
 from PyQt5 import QtCore
+import pyproj
 import math
 
 class Vehicle_Status(QtCore.QObject):
@@ -174,20 +175,6 @@ class Vehicle_Status(QtCore.QObject):
     lat_changed = QtCore.pyqtSignal(int)
     lon_changed = QtCore.pyqtSignal(int)
     waypoint_received_changed = QtCore.pyqtSignal(bool)
-
-    EARTH_REDIUS = 6378.137
-
-    def rad(self, d):
-        return d * math.pi / 180.0
-
-    def getDistance(self, lat1, lng1, lat2, lng2):
-        radLat1 = self.rad(lat1)
-        radLat2 = self.rad(lat2)
-        a = radLat1 - radLat2
-        b = self.rad(lng1) - self.rad(lng2)
-        s = 2 * math.asin(math.sqrt(math.pow(math.sin(a/2), 2) + math.cos(radLat1) * math.cos(radLat2) * math.pow(math.sin(b/2), 2)))
-        s = s * self.EARTH_REDIUS
-        return s
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
@@ -515,9 +502,18 @@ class Vehicle_Status(QtCore.QObject):
 
     @QtCore.pyqtSlot(result=QtCore.QVariant)
     def wp_received(self):
+        geodesic = pyproj.Geod(ellps='WGS84')
+        qml_distance = []
+        qml_azimuth = []
         for key in self._wp_received:
-            value = str(self._wp_received[key].lat) + ":" + str(self._wp_received[key].lon)
-            qml_key = str(key)
-            self._wp_received_qml[qml_key] = value
-        return self._wp_received_qml
-    
+            if key == 0:
+                continue
+            fwd_azimuth,back_azimuth,distance = geodesic.inv(self._lon, self._lat, self._wp_received[key].lon, self._wp_received[key].lat)
+            # print(distance.geodesic((self._lat, self._lon), (self._wp_received[key].lat, self._wp_received[key].lon)).meters)
+            if fwd_azimuth < 0:
+                fwd_azimuth = 360 + fwd_azimuth
+            relative_azimuth = self._yaw - fwd_azimuth
+            qml_distance.append(distance)
+            qml_azimuth.append(relative_azimuth)
+        for i in range(len(qml_distance)):
+            print("distance:{}, azimuth:{}".format(qml_distance[i], qml_azimuth[i]))

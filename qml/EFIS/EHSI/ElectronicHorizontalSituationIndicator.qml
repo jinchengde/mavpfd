@@ -46,13 +46,11 @@ Item {
         onPaint: {
             console.log(wp_received_flag)
             if(wp_received_flag == true) {
-                console.log("call wp received")
                 var data = pfd.wp_received()
-                console.log(data)
-                for(var key in data){
-                    var value = data[key]
-                    console.log(key, ": ", value)
-                }
+                // for(var key in data){
+                //     var value = data[key]
+                //     console.log(key, ": ", value)
+                // }
             }
             var ctx = getContext('2d')
             ctx.reset()
