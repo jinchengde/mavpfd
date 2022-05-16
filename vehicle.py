@@ -142,6 +142,7 @@ class GPS_RAW_INT():
         self.satellites_visible = gps_raw_int.satellites_visible
         
 from multiprocessing.sharedctypes import Value
+import re
 from PyQt5 import QtCore
 import pyproj
 import math
@@ -505,15 +506,29 @@ class Vehicle_Status(QtCore.QObject):
         geodesic = pyproj.Geod(ellps='WGS84')
         qml_distance = []
         qml_azimuth = []
+        qml_direction = [] #-1 left, 1 right
         for key in self._wp_received:
             if key == 0:
                 continue
             fwd_azimuth,back_azimuth,distance = geodesic.inv(self._lon, self._lat, self._wp_received[key].lon, self._wp_received[key].lat)
             # print(distance.geodesic((self._lat, self._lon), (self._wp_received[key].lat, self._wp_received[key].lon)).meters)
+            print("key:{}".format(key))
+            print("fwd_zimuth:{}".format(fwd_azimuth))
             if fwd_azimuth < 0:
                 fwd_azimuth = 360 + fwd_azimuth
             relative_azimuth = self._yaw - fwd_azimuth
+            if relative_azimuth < 180:
+                qml_direction.append(-1)
+                qml_azimuth.append(relative_azimuth)
+            elif relative_azimuth > 180:
+                qml_direction.append(1)
+                qml_azimuth.append(relative_azimuth - 180)
+            elif relative_azimuth > -180:
+                qml_direction.append(-1)
+                qml_azimuth.append(360 + relative_azimuth)
+            elif relative_azimuth < -180:
+                qml_direction.append(1)
+                qml_azimuth.append(0 - relative_azimuth)
             qml_distance.append(distance)
-            qml_azimuth.append(relative_azimuth)
         for i in range(len(qml_distance)):
-            print("distance:{}, azimuth:{}".format(qml_distance[i], qml_azimuth[i]))
+            print("distance:{}, azimuth:{}, direction:{}".format(qml_distance[i], qml_azimuth[i], qml_direction[i]))
