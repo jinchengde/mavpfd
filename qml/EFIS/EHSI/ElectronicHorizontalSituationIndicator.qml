@@ -13,7 +13,10 @@ Item {
     property double distance: 0
     property double headingBug: 0
     property bool distanceVisible: false
+    property bool wp_received_flag: false
     property int cdiMode: 0 // 0->OFF, 1->TO, 2->FROM
+
+    // property var pfd
 
     property alias labels: labels
 
@@ -41,6 +44,16 @@ Item {
         // transformOrigin: Item.TopLeft
 
         onPaint: {
+            console.log(wp_received_flag)
+            if(wp_received_flag == true) {
+                console.log("call wp received")
+                var data = pfd.wp_received()
+                console.log(data)
+                for(var key in data){
+                    var value = data[key]
+                    console.log(key, ": ", value)
+                }
+            }
             var ctx = getContext('2d')
             ctx.reset()
             ctx.lineWidth = 2

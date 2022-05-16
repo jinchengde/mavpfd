@@ -220,6 +220,7 @@ class Vehicle_Status(QtCore.QObject):
         self._lat = 0
         self._lon = 0
         self._wp_received = {}
+        self._wp_received_qml = {}
         self._wp_received_flag = False
 
     @QtCore.pyqtProperty(float, notify=pitch_changed)
@@ -511,4 +512,12 @@ class Vehicle_Status(QtCore.QObject):
             return
         self._wp_received_flag = value
         self.waypoint_received_changed.emit(self._wp_received_flag)
+
+    @QtCore.pyqtSlot(result=QtCore.QVariant)
+    def wp_received(self):
+        for key in self._wp_received:
+            value = str(self._wp_received[key].lat) + ":" + str(self._wp_received[key].lon)
+            qml_key = str(key)
+            self._wp_received_qml[qml_key] = value
+        return self._wp_received_qml
     

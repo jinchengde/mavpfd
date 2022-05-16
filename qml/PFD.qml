@@ -91,7 +91,9 @@ Window {
                     // deviation: pfd.vorDeviation
                     headingBug: pfd.nav_yaw
                     distance: pfd.wp_dist
+                    wp_received_flag: pfd.wp_received_flag
                     labels.distanceVisible: pfd.target_alt_visible
+                    // pfd: pfd
                     // cdiMode: pfd.courseDeviationIndicatorMode
                 }
             }
