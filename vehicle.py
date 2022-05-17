@@ -515,13 +515,13 @@ class Vehicle_Status(QtCore.QObject):
             if fwd_azimuth < 0:
                 fwd_azimuth = 360 + fwd_azimuth
             relative_azimuth = self._yaw - fwd_azimuth
-            if relative_azimuth < 180:
+            if relative_azimuth >= 0 and relative_azimuth < 180:
                 qml_value = str(WP_LEFT) + ":" + str(relative_azimuth) + ":" + str(distance)
-            elif relative_azimuth > 180:
+            elif relative_azimuth >= 180 and relative_azimuth <= 360:
                 qml_value = str(WP_RIGHT) + ":" + str(relative_azimuth - 180) + ":" + str(distance)
-            elif relative_azimuth > -180:
+            elif relative_azimuth < -180 and relative_azimuth >= -360:
                 qml_value = str(WP_LEFT) + ":" + str(360 + relative_azimuth) + ":" + str(distance)
-            elif relative_azimuth < -180:
+            elif relative_azimuth < 0 and relative_azimuth >= -180:
                 qml_value = str(WP_RIGHT) + ":" + str(0 - relative_azimuth) + ":" + str(distance)
             self._wp_received_qml[qml_key] = qml_value
         return self._wp_received_qml
