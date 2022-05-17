@@ -503,32 +503,25 @@ class Vehicle_Status(QtCore.QObject):
 
     @QtCore.pyqtSlot(result=QtCore.QVariant)
     def wp_received(self):
+        WP_LEFT = 0
+        WP_RIGHT = 1
         geodesic = pyproj.Geod(ellps='WGS84')
-        qml_distance = []
-        qml_azimuth = []
-        qml_direction = [] #-1 left, 1 right
         for key in self._wp_received:
             if key == 0:
                 continue
             fwd_azimuth,back_azimuth,distance = geodesic.inv(self._lon, self._lat, self._wp_received[key].lon, self._wp_received[key].lat)
-            # print(distance.geodesic((self._lat, self._lon), (self._wp_received[key].lat, self._wp_received[key].lon)).meters)
-            print("key:{}".format(key))
-            print("fwd_zimuth:{}".format(fwd_azimuth))
+            qml_key = str(key)
+            qml_value = str("")
             if fwd_azimuth < 0:
                 fwd_azimuth = 360 + fwd_azimuth
             relative_azimuth = self._yaw - fwd_azimuth
             if relative_azimuth < 180:
-                qml_direction.append(-1)
-                qml_azimuth.append(relative_azimuth)
+                qml_value = str(WP_LEFT) + ":" + str(relative_azimuth) + ":" + str(distance)
             elif relative_azimuth > 180:
-                qml_direction.append(1)
-                qml_azimuth.append(relative_azimuth - 180)
+                qml_value = str(WP_RIGHT) + ":" + str(relative_azimuth - 180) + ":" + str(distance)
             elif relative_azimuth > -180:
-                qml_direction.append(-1)
-                qml_azimuth.append(360 + relative_azimuth)
+                qml_value = str(WP_LEFT) + ":" + str(360 + relative_azimuth) + ":" + str(distance)
             elif relative_azimuth < -180:
-                qml_direction.append(1)
-                qml_azimuth.append(0 - relative_azimuth)
-            qml_distance.append(distance)
-        for i in range(len(qml_distance)):
-            print("distance:{}, azimuth:{}, direction:{}".format(qml_distance[i], qml_azimuth[i], qml_direction[i]))
+                qml_value = str(WP_RIGHT) + ":" + str(0 - relative_azimuth) + ":" + str(distance)
+            self._wp_received_qml[qml_key] = qml_value
+        return self._wp_received_qml
