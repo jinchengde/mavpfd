@@ -93,6 +93,8 @@ Window {
                     distance: pfd.wp_dist
                     wp_received_flag: pfd.wp_received_flag
                     labels.distanceVisible: pfd.target_alt_visible
+                    lat: pfd.lat
+                    lon: pfd.lon
                     // pfd: pfd
                     // cdiMode: pfd.courseDeviationIndicatorMode
                 }

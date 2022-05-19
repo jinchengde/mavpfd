@@ -15,6 +15,10 @@ Item {
     property bool distanceVisible: false
     property bool wp_received_flag: false
     property int cdiMode: 0 // 0->OFF, 1->TO, 2->FROM
+    property int lat: 0
+    property int lon: 0
+
+
 
     // property var pfd
 
@@ -23,6 +27,8 @@ Item {
     readonly property double pixelPerDeviation: 52.5
 
     onHeadingChanged: update()
+    onLatChanged: update()
+    onLonChanged: update()
 
     function update() {
         canvas.requestPaint()
@@ -44,22 +50,36 @@ Item {
         // transformOrigin: Item.TopLeft
 
         onPaint: {
-            console.log(wp_received_flag)
             if(wp_received_flag == true) {
                 var data = pfd.wp_received()
-                // for(var key in data){
-                //     var value = data[key]
-                //     console.log(key, ": ", value)
-                // }
-            }
-            var ctx = getContext('2d')
-            ctx.reset()
-            ctx.lineWidth = 2
-            ctx.strokeStyle = "green"
-            ctx.beginPath()
-            ctx.moveTo(0, 0)
-            ctx.lineTo(300, 300)
-            ctx.stroke()    
+                var ctx = getContext('2d')
+                ctx.reset()
+                ctx.lineWidth = 2
+                ctx.strokeStyle = "green"
+                ctx.beginPath()
+                var value=0
+                var pointx= 0
+                var pointy=0
+                var pointx_pre=0
+                var pointy_pre=0
+                for(var key in data){                    
+                    value = data[key]
+                    const point = value.split(':')
+                    pointx = parseInt(point[0])
+                    pointy = parseInt(point[1])
+                    if(key == 0)
+                    {
+                        pointx_pre = pointx
+                        pointy_pre = pointy
+                        continue
+                    }
+                    ctx.moveTo(pointx_pre, pointy_pre)
+                    ctx.lineTo(pointx, pointy)
+                    pointx_pre = pointx
+                    pointy_pre = pointy                    
+                }
+                ctx.stroke()   
+            }             
         }
     }
 
