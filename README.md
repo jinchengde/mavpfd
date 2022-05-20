@@ -4,7 +4,7 @@ Primary Flight Display with Mavlink
 
 基于mavlink的飞行状态显示
 
-![11A67AU(8QVS0( )UP} D12](https://user-images.githubusercontent.com/5361334/166111421-0bdf7348-9e46-4836-b71d-35958508520e.png)
+![1SJ)(~R~53K 4QK33G%D%1L](https://user-images.githubusercontent.com/5361334/169471072-6349e0c8-29de-483f-8800-8e2c295a1dad.png)
 
 
 
