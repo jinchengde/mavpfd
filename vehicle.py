@@ -503,7 +503,6 @@ class Vehicle_Status(QtCore.QObject):
 
     @QtCore.pyqtSlot(result=QtCore.QVariant)
     def wp_received(self):
-        WP_RADIUS = 150
         WP_RADIUS_SCALE = 1
         wp_element_dict = {}
         QML_X = 0
@@ -520,35 +519,35 @@ class Vehicle_Status(QtCore.QObject):
             if fwd_azimuth < 0: #LEFT
                 fwd_azimuth = -fwd_azimuth
                 if fwd_azimuth < 90:
-                    QML_X = WP_RADIUS - (math.sin(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
-                    QML_Y = WP_RADIUS - (math.cos(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
+                    QML_X = -(math.sin(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
+                    QML_Y = -(math.cos(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
                 elif fwd_azimuth > 90 and fwd_azimuth < 180:
                     fwd_azimuth = 180 - fwd_azimuth
-                    QML_X = WP_RADIUS - (math.cos(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
-                    QML_Y = WP_RADIUS + (math.sin(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
+                    QML_X = -(math.sin(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
+                    QML_Y = (math.cos(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
                 elif fwd_azimuth == 90:
-                    QML_X = WP_RADIUS - (distance / WP_RADIUS_SCALE)
-                    QML_Y = WP_RADIUS
+                    QML_X = - (distance / WP_RADIUS_SCALE)
+                    QML_Y = 0
                 elif fwd_azimuth == 180:
-                    QML_X = WP_RADIUS
-                    QML_Y = WP_RADIUS * 2
+                    QML_X = 0
+                    QML_Y = 0
             elif fwd_azimuth == 0:
-                QML_X = WP_RADIUS
+                QML_X = 0
                 QML_Y = 0
             elif fwd_azimuth > 0: #RIGHT
                 if fwd_azimuth < 90:
-                    QML_X = WP_RADIUS + (math.sin(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
-                    QML_Y = WP_RADIUS - (math.cos(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
+                    QML_X = (math.sin(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
+                    QML_Y = -(math.cos(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
                 elif fwd_azimuth > 90 and fwd_azimuth < 180:
                     fwd_azimuth = 180 - fwd_azimuth
-                    QML_X = WP_RADIUS + (math.cos(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
-                    QML_Y = WP_RADIUS + (math.sin(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
+                    QML_X = (math.cos(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
+                    QML_Y = (math.sin(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
                 elif fwd_azimuth == 90:
-                    QML_X = WP_RADIUS + (distance / WP_RADIUS_SCALE)
-                    QML_Y = WP_RADIUS
+                    QML_X = (distance / WP_RADIUS_SCALE)
+                    QML_Y = 0
                 elif fwd_azimuth == 180:
-                    QML_X = WP_RADIUS
-                    QML_Y = WP_RADIUS * 2
+                    QML_X = 0
+                    QML_Y = 0
             QML_VALUE = str(QML_X) + ":" + str(QML_Y)
             self._wp_received_qml[str(key)] = QML_VALUE
         return self._wp_received_qml

@@ -62,6 +62,8 @@ Item {
                 var pointy=0
                 var pointx_pre=0
                 var pointy_pre=0
+                ctx.translate(150, 150)
+                ctx.rotate((-heading)*Math.PI/180)
                 for(var key in data){                    
                     value = data[key]
                     const point = value.split(':')
@@ -78,6 +80,8 @@ Item {
                     pointx_pre = pointx
                     pointy_pre = pointy                    
                 }
+                // console.log(heading)
+                
                 ctx.stroke()   
             }             
         }
