@@ -530,24 +530,25 @@ class Vehicle_Status(QtCore.QObject):
                     QML_Y = 0
                 elif fwd_azimuth == 180:
                     QML_X = 0
-                    QML_Y = 0
+                    QML_Y = (distance / WP_RADIUS_SCALE)
             elif fwd_azimuth == 0:
                 QML_X = 0
-                QML_Y = 0
+                QML_Y = - (distance / WP_RADIUS_SCALE)
             elif fwd_azimuth > 0: #RIGHT
                 if fwd_azimuth < 90:
                     QML_X = (math.sin(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
                     QML_Y = -(math.cos(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
                 elif fwd_azimuth > 90 and fwd_azimuth < 180:
                     fwd_azimuth = 180 - fwd_azimuth
-                    QML_X = (math.cos(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
-                    QML_Y = (math.sin(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
+                    QML_X = (math.sin(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
+                    QML_Y = (math.cos(math.radians(fwd_azimuth)) * distance / WP_RADIUS_SCALE)
                 elif fwd_azimuth == 90:
                     QML_X = (distance / WP_RADIUS_SCALE)
                     QML_Y = 0
                 elif fwd_azimuth == 180:
                     QML_X = 0
-                    QML_Y = 0
+                    QML_Y = (distance / WP_RADIUS_SCALE)
+            print("key: {}, QML_X : {}, QML_Y: {}".format(key, QML_X, QML_Y))
             QML_VALUE = str(QML_X) + ":" + str(QML_Y)
             self._wp_received_qml[str(key)] = QML_VALUE
         return self._wp_received_qml
