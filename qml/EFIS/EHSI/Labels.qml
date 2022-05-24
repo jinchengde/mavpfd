@@ -9,6 +9,7 @@ Item {
     property double course: 0
     property double distance: 0
     property bool distanceVisible: false
+    property int sequence: 0
 
     property string headingString: headingBug.toFixed(0)
     property string courseString: course.toFixed(0)
@@ -37,6 +38,22 @@ Item {
         color: "#00ff00"
         antialiasing: true
         text: "CRS " + (courseString.length === 1 ? "00" + courseString : courseString.length === 2 ? "0" + courseString : courseString)
+    }
+
+    // Sequence
+    Text {
+        x: 25
+        y: 272
+        width: 100
+        height: 18
+        font.family: "Courier Std"
+        font.pixelSize: 16
+        horizontalAlignment: Text.AlignRight
+        verticalAlignment: Text.AlignVCenter
+        color: "#ffffff"
+        antialiasing: true
+        text: "Waypoint: " + sequence
+        visible: distanceVisible
     }
 
     // Distance

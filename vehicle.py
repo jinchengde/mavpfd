@@ -176,6 +176,7 @@ class Vehicle_Status(QtCore.QObject):
     lat_changed = QtCore.pyqtSignal(int)
     lon_changed = QtCore.pyqtSignal(int)
     waypoint_received_changed = QtCore.pyqtSignal(bool)
+    mission_seq_changed = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(Vehicle_Status, self).__init__(parent)
@@ -203,6 +204,7 @@ class Vehicle_Status(QtCore.QObject):
         self._alt_error = 0
         self._xtrack_error = 0
         self._mission_cmd = 0
+        self._mission_seq = 0
         self._vibration_level = 0
         self._wp_dist = 0
         self._lat = 0
@@ -445,6 +447,15 @@ class Vehicle_Status(QtCore.QObject):
     def mission_cmd(self, value):
         self._mission_cmd = value       
         self.mission_cmd_changed.emit(self._mission_cmd)
+
+    @QtCore.pyqtProperty(int, notify=mission_seq_changed)
+    def mission_seq(self):
+        return self._mission_seq
+
+    @mission_seq.setter
+    def mission_seq(self, value):
+        self._mission_seq = value       
+        self.mission_seq_changed.emit(self._mission_seq)
 
     @QtCore.pyqtProperty(int, notify=vibration_level_changed)
     def vibration_level(self):

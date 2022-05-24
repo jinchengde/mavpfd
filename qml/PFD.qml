@@ -28,7 +28,6 @@ Window {
             anchors.centerIn: parent
             spacing: 4
             scale: container.scaleRatio
-            // layoutDirection: "RightToLeft"
 
             Rectangle {
                 radius: 6
@@ -36,9 +35,6 @@ Window {
                 id: eadi
                 width: 310
                 height: 310
-                // anchors.left: parent.left
-                // anchors.top: parent.top
-                // visible: false
 
                 ElectronicAttitudeDirectionIndicator {
                     anchors.centerIn: parent
@@ -84,10 +80,10 @@ Window {
 
                 ElectronicHorizontalSituationIndicator {
                     anchors.centerIn: parent
-
                     heading: pfd.yaw
                     headingBug: pfd.nav_yaw
                     distance: pfd.wp_dist
+                    sequence: pfd.mission_seq
                     wp_received_flag: pfd.wp_received_flag
                     labels.distanceVisible: pfd.target_alt_visible
                 }

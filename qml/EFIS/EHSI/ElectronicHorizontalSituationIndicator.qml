@@ -15,6 +15,7 @@ Item {
     property bool distanceVisible: false
     property bool wp_received_flag: false
     property int cdiMode: 0 // 0->OFF, 1->TO, 2->FROM
+    property int sequence: 0
 
 
 
@@ -45,7 +46,6 @@ Item {
         clip: true
 
         onPaint: {
-            console.log("paint")
             if(wp_received_flag == true) {
                 var data = pfd.wp_received()
                 var ctx = getContext('2d')
@@ -188,6 +188,7 @@ Item {
        headingBug: root.headingBug
        course: root.course
        distance: root.distance
+       sequence: root.sequence
        distanceVisible: root.distanceVisible
     }
 

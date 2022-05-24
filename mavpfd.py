@@ -367,6 +367,7 @@ def update_mav(parent_pipe_recv):
                         vehicle_status.target_alt = obj.z
                         vehicle_status.target_alt_visible = True
                         vehicle_status.mission_cmd = obj.cmd
+                        vehicle_status.mission_seq = obj.seq
                 elif isinstance(obj, EKF_STATUS):
                     vehicle_status.ekf_healthy = obj.healthy
                 elif isinstance(obj, GPS_RAW_INT):
