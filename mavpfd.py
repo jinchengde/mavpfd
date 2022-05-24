@@ -380,7 +380,8 @@ def update_mav(parent_pipe_recv):
                     else:
                         vehicle_status.vibration_level = 0
                 elif isinstance(obj, WaypointInfo):
-                    vehicle_status._wp_received[obj.seq] = obj
+                    if vehicle_status.wp_received_flag != True:
+                        vehicle_status._wp_received[obj.seq] = obj
                 elif isinstance(obj, Status_Notify):
                     vehicle_status.wp_received_flag = True
 

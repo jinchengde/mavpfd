@@ -548,7 +548,6 @@ class Vehicle_Status(QtCore.QObject):
                 elif fwd_azimuth == 180:
                     QML_X = 0
                     QML_Y = (distance / WP_RADIUS_SCALE)
-            print("key: {}, QML_X : {}, QML_Y: {}".format(key, QML_X, QML_Y))
             QML_VALUE = str(QML_X) + ":" + str(QML_Y)
             self._wp_received_qml[str(key)] = QML_VALUE
         return self._wp_received_qml

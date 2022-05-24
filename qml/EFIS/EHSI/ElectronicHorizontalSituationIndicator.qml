@@ -15,8 +15,6 @@ Item {
     property bool distanceVisible: false
     property bool wp_received_flag: false
     property int cdiMode: 0 // 0->OFF, 1->TO, 2->FROM
-    property int lat: 0
-    property int lon: 0
 
 
 
@@ -27,8 +25,7 @@ Item {
     readonly property double pixelPerDeviation: 52.5
 
     onHeadingChanged: update()
-    onLatChanged: update()
-    onLonChanged: update()
+    onDistanceChanged: update()
 
     function update() {
         canvas.requestPaint()
@@ -46,10 +43,9 @@ Item {
         height: 300
         antialiasing: true
         clip: true
-        // scale: 1 / scaleRatio
-        // transformOrigin: Item.TopLeft
 
         onPaint: {
+            console.log("paint")
             if(wp_received_flag == true) {
                 var data = pfd.wp_received()
                 var ctx = getContext('2d')
@@ -80,7 +76,6 @@ Item {
                     pointx_pre = pointx
                     pointy_pre = pointy                    
                 }
-                // console.log(heading)
                 
                 ctx.stroke()   
             }             
@@ -171,9 +166,6 @@ Item {
         rotation: -heading
         width: 300
         height: 300
-        // fillMode: Image.PreserveAspectCrop
-        // clip: true
-        // anchors.centerIn: parent
     }
 
     CustomImage {
@@ -183,7 +175,6 @@ Item {
         width: 300
         height: 300
     }
-
 
     CustomImage {
         id: mark

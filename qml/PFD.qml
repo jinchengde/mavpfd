@@ -86,17 +86,10 @@ Window {
                     anchors.centerIn: parent
 
                     heading: pfd.yaw
-                    // course: pfd.course
-                    // bearing: pfd.bearing
-                    // deviation: pfd.vorDeviation
                     headingBug: pfd.nav_yaw
                     distance: pfd.wp_dist
                     wp_received_flag: pfd.wp_received_flag
                     labels.distanceVisible: pfd.target_alt_visible
-                    lat: pfd.lat
-                    lon: pfd.lon
-                    // pfd: pfd
-                    // cdiMode: pfd.courseDeviationIndicatorMode
                 }
             }
         
