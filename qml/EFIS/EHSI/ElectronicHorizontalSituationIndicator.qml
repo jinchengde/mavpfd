@@ -50,8 +50,10 @@ Item {
                 var data = pfd.wp_received()
                 var ctx = getContext('2d')
                 ctx.reset()
-                ctx.lineWidth = 2
+                ctx.lineWidth = 3
+                ctx.arcwit
                 ctx.strokeStyle = "green"
+                ctx.fillStyle = "black"
                 ctx.beginPath()
                 var value=0
                 var pointx= 0
@@ -70,8 +72,6 @@ Item {
                     pointy = parseInt(point[1])
                     ctx.moveTo(pointx, pointy)
                     ctx.arc(pointx, pointy, radius, (startangle)*(Math.PI/180), (endangle)*(Math.PI/180), false) //x, y, radius, startAngle, endAngle, anticlockwise
-                    ctx.fillStyle = "green"
-                    ctx.fill()
                     if(key == 0)
                     {
                         pointx_pre = pointx
@@ -83,8 +83,8 @@ Item {
                     pointx_pre = pointx
                     pointy_pre = pointy                    
                 }
-                
                 ctx.stroke()   
+                ctx.fill()
             }             
         }
     }
