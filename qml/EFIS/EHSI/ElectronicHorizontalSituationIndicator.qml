@@ -58,6 +58,9 @@ Item {
                 var pointy=0
                 var pointx_pre=0
                 var pointy_pre=0
+                var radius=5
+                var startangle=-180
+                var endangle=180
                 ctx.translate(150, 150)
                 ctx.rotate((-heading)*Math.PI/180)
                 for(var key in data){                    
@@ -65,6 +68,10 @@ Item {
                     const point = value.split(':')
                     pointx = parseInt(point[0])
                     pointy = parseInt(point[1])
+                    ctx.moveTo(pointx, pointy)
+                    ctx.arc(pointx, pointy, radius, (startangle)*(Math.PI/180), (endangle)*(Math.PI/180), false) //x, y, radius, startAngle, endAngle, anticlockwise
+                    ctx.fillStyle = "green"
+                    ctx.fill()
                     if(key == 0)
                     {
                         pointx_pre = pointx
