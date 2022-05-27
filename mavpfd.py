@@ -351,12 +351,11 @@ def update_mav(parent_pipe_recv):
                         vehicle_status.target_alt_visible = False  
                         vehicle_status.target_alt = obj.alt_error                      
                     else: 
+                        vehicle_status.wp_dist = obj.wp_dist
                         if vehicle_status.mission_cmd == MISSION_CURRENT.MAV_CMD_NAV_LAND:
                             vehicle_status.ils_visible = True
-                            vehicle_status.wp_dist = obj.wp_dist
                         else:
                             vehicle_status.ils_visible = False     
-                            vehicle_status.wp_dist = obj.wp_dist                   
                 elif isinstance(obj, FlightState):
                     vehicle_status.flightmode = obj.mode
                     vehicle_status.arm_disarm = obj.arm_disarm
