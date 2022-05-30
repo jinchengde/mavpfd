@@ -24,6 +24,8 @@ import time
 import threading
 import optparse
 import math
+import yaml
+import json
 
 from multiprocessing import Process, freeze_support, Pipe, Semaphore, Event, Lock, Queue
 
@@ -400,8 +402,15 @@ def childProcessRun(parm, p):
     hub.run()    
 
 if __name__ == '__main__':
-    parser = optparse.OptionParser("mavpfd.py [options]")
-    (opts, parm) = parser.parse_args()
+    # parser = optparse.OptionParser("mavpfd.py [options]")
+    # (opts, parm) = parser.parse_args()
+    file = open('config.yaml')
+    data = file.read()
+    yaml_reader = yaml.full_load(data)
+    parm = []
+    if yaml_reader.__contains__('udp'):
+        str_conn = 'udp:' + str(yaml_reader['udp']['host']) + ":" + str(yaml_reader['udp']['port'])
+        parm.append(str_conn)
 
     parent_pipe_recv,child_pipe_send = Pipe()
     childProcess = Process(target=childProcessRun, args=((parm, (parent_pipe_recv,child_pipe_send))))
