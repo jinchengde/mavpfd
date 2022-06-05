@@ -10,5 +10,8 @@ Youtube:
 
 基于mavlink的飞行状态显示
 
+Bilibili：
+https://www.bilibili.com/video/BV1sg411d71b?share_source=copy_web
+
 This project is Reference:
 [QmlFlightinstrumnets](https://github.com/berkbavas/QmlFlightInstruments)
