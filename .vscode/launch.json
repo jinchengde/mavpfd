@@ -12,7 +12,7 @@
             "console": "integratedTerminal",
             "justMyCode": false,
             //"args": ["udp:127.0.0.1:14551"]
-            "args": ["tcp:172.31.218.58:5760"]
+            //"args": ["tcp:172.31.218.58:5760"]
         }
     ]
 }
