@@ -11,8 +11,11 @@ Window {
     visible: true
     minimumWidth: 630
     minimumHeight: 320
+    // width: Screen.desktopAvailableWidth
+    // height: Screen.desktopAvailableHeight
     //visibility: Window.Maximized
-    title: "Primary Flight Display"
+    visibility: Window.FullScreen
+    // title: "Primary Flight Display"
     color: "#ffffff"
 
     Item {
