@@ -16,7 +16,7 @@ Window {
     //visibility: Window.Maximized
     visibility: Window.FullScreen
     // title: "Primary Flight Display"
-    color: "#ffffff"
+    color: "#000000"
 
     Item {
         id: container
