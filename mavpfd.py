@@ -119,6 +119,7 @@ class Link(object):
         self._wp_requested = {}
         self._get_mission_item = False
         self._current_seq = 0
+        self._get_system_info = False
 
     def maintain_connections(self):
         '''reconnect the mavlink'''
@@ -245,6 +246,10 @@ class Link(object):
                     arm_disarm = conn._mav.motors_armed()
                     target_system = conn._mav.target_system
                     target_component = conn._mav.target_component
+                    if self._get_system_info == False:
+                        for i in range(0, 3):
+                            conn._mav.mav.request_data_stream_send(target_system, target_component,
+                                                               mavutil.mavlink.MAV_DATA_STREAM_ALL, 4, 1)
                     self._get_system_info = True
                     conn._msglist.append(FlightState(flightmode, arm_disarm, target_system, target_component))
                 elif m._type == 'COMMAND_ACK':
@@ -410,6 +415,9 @@ if __name__ == '__main__':
     parm = []
     if yaml_reader.__contains__('udp'):
         str_conn = 'udp:' + str(yaml_reader['udp']['host']) + ":" + str(yaml_reader['udp']['port'])
+        parm.append(str_conn)
+    elif yaml_reader.__contains__('serial'):
+        str_conn = str(yaml_reader['serial']['com'])
         parm.append(str_conn)
 
     parent_pipe_recv,child_pipe_send = Pipe()
