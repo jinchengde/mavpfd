@@ -434,6 +434,8 @@ if __name__ == '__main__':
     engine.load(QUrl('qml/PFD.qml'))
 
     timer = QTimer(interval=100)
+    while parent_pipe_recv.poll(): #flush pipe data
+        objList = parent_pipe_recv.recv()
     timer.timeout.connect(partial(update_mav, parent_pipe_recv))
     timer.start()
 
